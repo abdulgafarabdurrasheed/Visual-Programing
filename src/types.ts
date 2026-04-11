@@ -49,3 +49,9 @@ export const PORT_COLORS: Record<PortType, string> = {
   array: '#10b981',
   any: '#94a3b8',
 };
+
+export interface ViewportState {
+  x: number;
+  y: number;
+  zoom: number;
+}
