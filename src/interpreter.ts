@@ -16,6 +16,11 @@ export class Interpreter {
     switch (node.type) {
       case 'string_literal': return String(node.data?.value ?? '');
       case 'number_literal': return Number(node.data?.value ?? 0);
+      case 'add': {
+        const a = Number(this.resolveInputValue(node, node.inputs[0].id) ?? 0);
+        const b = Number(this.resolveInputValue(node, node.inputs[1].id) ?? 0);
+        return a + b;
+      }
       default: return undefined;
     }
   }
