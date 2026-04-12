@@ -23,6 +23,8 @@ function App() {
   const [isPanning, setIsPanning] = useState(false);
   const [nodes, setNodes] = useState<NodeData[]>([MOCK_NODE])
   const [dragState, setDragState] = useState({ isDragging: false, nodeId: null as string | null, offsetX: 0, offsetY: 0 });
+  const [wires, setWires] = useState<any[]>([]);
+  const [drawingWire, setDrawingWire] = useState({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
   
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +40,30 @@ function App() {
         });
      }
   }, [nodes, viewport])
+
+  const handlePortMouseDown = useCallback((e: React.MouseEvent, nodeId: string, portId: string, type: string, direction: 'input' | 'output') => {
+    e.stopPropagation();
+    setDrawingWire({
+      isDrawing: true, fromNodeId: nodeId, fromPortId: portId, fromType: type, fromDirection: direction, mouseX: (e.clientX - viewport.x) / viewport.zoom, mouseY: (e.clientY - viewport.y) / viewport.zoom,
+    });
+  }, [viewport])
+
+  const handlePortMouseUp = useCallback((e: React.MouseEvent, nodeId: string, portId: string) => {
+    e.stopPropagation();
+
+    if (drawingWire.isDrawing && drawingWire.fromNodeId !== nodeId) {
+        const newWire = {
+            id: `wire_${Date.now()}`,
+            fromNodeId: drawingWire.fromDirection === 'output' ? drawingWire.fromNodeId : nodeId,
+            fromPortId: drawingWire.fromDirection === 'output' ? drawingWire.fromPortId : portId,
+            toNodeId: drawingWire.fromDirection === 'input' ? drawingWire.fromNodeId : nodeId,
+            toPortId: drawingWire.fromDirection === 'input' ? drawingWire.fromPortId : portId,
+            type: drawingWire.fromType
+        };
+        setWires(prev => [...prev, newWire]);
+    }
+    setDrawingWire(prev => ({ ...prev, isDrawing: false }));
+  }, [drawingWire])
 
   const handleBoardMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.target === boardRef.current) {
@@ -56,6 +82,15 @@ function App() {
           : n
       ));
     } 
+
+    else if (drawingWire.isDrawing) {
+        setDrawingWire(prev => ({
+            ...prev,
+            mouseX: (e.clientX - viewport.x) / viewport.zoom,
+            mouseY: (e.clientY - viewport.y) / viewport.zoom
+        }));
+    }
+
     else if (isPanning) {
       setViewport(prev => ({
         ...prev,
@@ -69,6 +104,7 @@ function App() {
     const handleBoardMouseUp = useCallback(() => {
         setIsPanning(false);
         setDragState({ isDragging: false, nodeId: null, offsetX: 0, offsetY: 0 });
+        setDrawingWire(prev => ({ ...prev, isDrawing: false }));
     }, []);
 
 
@@ -107,7 +143,11 @@ function App() {
         >
             {nodes.map(node => (
                 <div key={node.id} onMouseDown={(e) => handleNodeMouseDown(e, node.id)}>
-                    <NodeComponent node={node} />
+                    <NodeComponent
+                        node={node}
+                        onPortMouseDown={handlePortMouseDown}
+                        onPortMouseUp={handlePortMouseUp}
+                    />
                 </div>
             ))}
         </div>
