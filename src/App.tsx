@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { ViewportState, NodeData } from './types';
 import NodeComponent from './components/NodeComponent';
 import WireLayer from './components/WireLayer';
+import { Interpreter } from './interpreter';
 
 const MOCK_NODE: NodeData = {
     id: 'node_1',
@@ -26,6 +27,12 @@ function App() {
   const [dragState, setDragState] = useState({ isDragging: false, nodeId: null as string | null, offsetX: 0, offsetY: 0 });
   const [wires, setWires] = useState<any[]>([]);
   const [drawingWire, setDrawingWire] = useState({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
+  
+  const handleRun = useCallback(() => {
+    const engine = new Interpreter(nodes, wires);
+    engine.run();
+  }, [nodes, wires]);
+
   
   const boardRef = useRef<HTMLDivElement>(null);
 
@@ -114,7 +121,18 @@ function App() {
   const gridOffsetY = viewport.y % gridSize;
 
   return (
+
     <div className="app-container" style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+      
+    <div style={{ position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 999 }}>
+        <button 
+          onClick={handleRun}
+          style={{ padding: '10px 30px', fontSize: '18px', fontWeight: 'bold', backgroundColor: 'var(--accent)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)' }}
+        >
+          ▶ RUN
+        </button>
+      </div>
+
       
       <div
         ref={boardRef}
