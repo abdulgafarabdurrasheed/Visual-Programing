@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { ViewportState, NodeData } from './types';
 import NodeComponent from './components/NodeComponent';
+import WireLayer from './components/WireLayer';
 
 const MOCK_NODE: NodeData = {
     id: 'node_1',
@@ -98,7 +99,7 @@ function App() {
         y: prev.y + e.movementY
       }));
     }
-  }, [isPanning, dragState, viewport]);
+  }, [isPanning, dragState, viewport, drawingWire]);
 
 
     const handleBoardMouseUp = useCallback(() => {
@@ -141,6 +142,8 @@ function App() {
             transformOrigin: '0 0',
           }}
         >
+            <WireLayer wires={wires} nodes={nodes} drawingWire={drawingWire} />
+            
             {nodes.map(node => (
                 <div key={node.id} onMouseDown={(e) => handleNodeMouseDown(e, node.id)}>
                     <NodeComponent
