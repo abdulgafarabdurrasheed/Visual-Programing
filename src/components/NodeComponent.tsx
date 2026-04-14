@@ -5,8 +5,8 @@ import { PORT_COLORS, CATEGORY_COLORS } from '../types';
 interface NodeComponentProps {
   node: NodeData;
   onPortMouseDown: (e: React.MouseEvent, nodeId: string, portId: string, type: string, direction: 'input' | 'output') => void;
-  onPortMouseUp: (e: React.MouseEvent, nodeId: string, portId: string) => void;
-}
+  onPortMouseUp: (e: React.MouseEvent, nodeId: string, portId: string, type: string, direction: 'input' | 'output') => void;
+}  
 
 const NodeComponent: React.FC<NodeComponentProps> = ({ node, onPortMouseDown, onPortMouseUp }) => {
   const color = CATEGORY_COLORS[node.category] || '#6366f1';
@@ -18,7 +18,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({ node, onPortMouseDown, on
     return (
       <div key={port.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '28px' }}>
         {port.direction === 'input' && (
-          <div style={{ marginLeft: '-6px', zIndex: 10, cursor: 'crosshair' }} onMouseDown={(e) => onPortMouseDown(e, node.id, port.id, port.type, 'input')} onMouseUp={(e) => onPortMouseUp(e, node.id, port.id)}>
+          <div style={{ marginLeft: '-6px', zIndex: 10, cursor: 'crosshair' }} onMouseDown={(e) => onPortMouseDown(e, node.id, port.id, port.type, 'input')} onMouseUp={(e) => onPortMouseUp(e, node.id, port.id, port.type, 'input')}>
             {isExec ? (
               <svg viewBox="0 0 10 10" width="10" height="10" style={{ color: portColor }}>
                 <polygon points="0,0 10,5 0,10" fill="currentColor"/>
@@ -32,7 +32,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({ node, onPortMouseDown, on
           {port.label}
         </div>
         {port.direction === 'output' && (
-          <div style={{ marginRight: '-6px', zIndex: 10, cursor: 'crosshair' }} onMouseDown={(e) => onPortMouseDown(e, node.id, port.id, port.type, 'output')} onMouseUp={(e) => onPortMouseUp(e, node.id, port.id)}>
+          <div style={{ marginRight: '-6px', zIndex: 10, cursor: 'crosshair' }} onMouseDown={(e) => onPortMouseDown(e, node.id, port.id, port.type, 'output')} onMouseUp={(e) => onPortMouseUp(e, node.id, port.id, port.type, 'output')}>
             {isExec ? (
               <svg viewBox="0 0 10 10" width="10" height="10" style={{ color: portColor }}>
                 <polygon points="0,0 10,5 0,10" fill="currentColor"/>

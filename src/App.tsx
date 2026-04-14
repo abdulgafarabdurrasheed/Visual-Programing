@@ -3,27 +3,13 @@ import type { ViewportState, NodeData } from './types';
 import NodeComponent from './components/NodeComponent';
 import WireLayer from './components/WireLayer';
 import { Interpreter } from './interpreter';
-
-const MOCK_NODE: NodeData = {
-    id: 'node_1',
-    type: 'print',
-    category: 'io',
-    label: 'Print to Console',
-    x: window.innerWidth / 2 - 100,
-    y: window.innerHeight / 2 - 50,
-    inputs: [
-        { id: 'p1', label: 'Exec', type: 'exec', direction: 'input' },
-        { id: 'p2', label: 'Message', type: 'string', direction: 'input', value: 'Hello World!' }
-    ],
-    outputs: [
-        { id: 'p3', label: 'Exec', type: 'exec', direction: 'output' }
-    ]
-};
+import NodePalette from './components/NodePalette';
+import { NODE_TEMPLATES } from './nodeTemplates';
 
 function App() {
   const [viewport, setViewport] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
   const [isPanning, setIsPanning] = useState(false);
-  const [nodes, setNodes] = useState<NodeData[]>([MOCK_NODE])
+  const [nodes, setNodes] = useState<NodeData[]>([])
   const [dragState, setDragState] = useState({ isDragging: false, nodeId: null as string | null, offsetX: 0, offsetY: 0 });
   const [wires, setWires] = useState<any[]>([]);
   const [drawingWire, setDrawingWire] = useState({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
@@ -32,6 +18,25 @@ function App() {
     const engine = new Interpreter(nodes, wires);
     engine.run();
   }, [nodes, wires]);
+
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const type = e.dataTransfer.getData('application/nodescript-template');
+    if (!type) return;
+
+    const template = NODE_TEMPLATES.find(t => t.type === type);
+    if (!template) return;
+
+    const rect = boardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const dropX = (e.clientX - rect.left - viewport.x) / viewport.zoom;
+    const dropY = (e.clientY - rect.top - viewport.y) / viewport.zoom;
+
+    const newNode = template.createNode(dropX, dropY, `node_${Date.now()}`);
+    setNodes(prev => [...prev, newNode]);
+  }, [viewport]);
 
   
   const boardRef = useRef<HTMLDivElement>(null);
@@ -56,22 +61,50 @@ function App() {
     });
   }, [viewport])
 
-  const handlePortMouseUp = useCallback((e: React.MouseEvent, nodeId: string, portId: string) => {
-    e.stopPropagation();
+  const handlePortMouseUp = useCallback((
+    _e: React.MouseEvent, nodeId: string, portId: string, portType: string, direction: 'input' | 'output'
+  ) => {
+    if (!drawingWire.isDrawing || !drawingWire.fromNodeId || !drawingWire.fromPortId) return;
 
-    if (drawingWire.isDrawing && drawingWire.fromNodeId !== nodeId) {
-        const newWire = {
-            id: `wire_${Date.now()}`,
-            fromNodeId: drawingWire.fromDirection === 'output' ? drawingWire.fromNodeId : nodeId,
-            fromPortId: drawingWire.fromDirection === 'output' ? drawingWire.fromPortId : portId,
-            toNodeId: drawingWire.fromDirection === 'input' ? drawingWire.fromNodeId : nodeId,
-            toPortId: drawingWire.fromDirection === 'input' ? drawingWire.fromPortId : portId,
-            type: drawingWire.fromType
-        };
-        setWires(prev => [...prev, newWire]);
+    if (drawingWire.fromNodeId === nodeId) {
+      setDrawingWire({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
+      return;
     }
-    setDrawingWire(prev => ({ ...prev, isDrawing: false }));
-  }, [drawingWire])
+
+    if (drawingWire.fromDirection === direction) {
+      setDrawingWire({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
+      return;
+    }
+
+    const fromIsExec = drawingWire.fromType === 'exec';
+    const toIsExec = portType === 'exec';
+    
+    if (fromIsExec !== toIsExec) {
+      setDrawingWire({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
+      return;
+    }
+
+    const destPortId = direction === 'input' ? portId : drawingWire.fromPortId;
+    setWires(prev => prev.filter(w => w.toPortId !== destPortId));
+
+    const fromNodeId = drawingWire.fromDirection === 'output' ? drawingWire.fromNodeId : nodeId;
+    const fromPortId = drawingWire.fromDirection === 'output' ? drawingWire.fromPortId : portId;
+    const toNodeId = drawingWire.fromDirection === 'output' ? nodeId : drawingWire.fromNodeId;
+    const toPortId = drawingWire.fromDirection === 'output' ? portId : drawingWire.fromPortId;
+    const wireType = fromIsExec ? 'exec' : (drawingWire.fromType || portType);
+
+    const newWire = {
+      id: `wire_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      fromNodeId,
+      fromPortId,
+      toNodeId,
+      toPortId,
+      type: wireType,
+    };
+
+    setWires(prev => [...prev, newWire]);
+    setDrawingWire({ isDrawing: false, fromNodeId: '', fromPortId: '', fromType: '', fromDirection: '', mouseX: 0, mouseY: 0 });
+  }, [drawingWire]);
 
   const handleBoardMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.target === boardRef.current) {
@@ -120,19 +153,19 @@ function App() {
   const gridOffsetX = viewport.x % gridSize;
   const gridOffsetY = viewport.y % gridSize;
 
-  return (
+   return (
+    <div className="app-container" style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'row' }}>
+        
+      <NodePalette />
 
-    <div className="app-container" style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      
-    <div style={{ position: 'absolute', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: 999 }}>
-        <button 
-          onClick={handleRun}
-          style={{ padding: '10px 30px', fontSize: '18px', fontWeight: 'bold', backgroundColor: 'var(--accent)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)' }}
+      <div style={{ position: 'absolute', top: '20px', left: '60%', transform: 'translateX(-50%)', zIndex: 999 }}>
+        <button
+            onClick={handleRun}
+            style={{ padding: '10px 30px', fontSize: '18px', fontWeight: 'bold', backgroundColor: 'var(--accent)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)' }}
         >
-          ▶ RUN
+            ▶ RUN
         </button>
-      </div>
-
+      </div>  
       
       <div
         ref={boardRef}
@@ -148,6 +181,8 @@ function App() {
         onMouseMove={handleBoardMouseMove}
         onMouseUp={handleBoardMouseUp}
         onMouseLeave={handleBoardMouseUp}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
       >
         <div
           style={{
@@ -176,5 +211,4 @@ function App() {
     </div>
   );
 }
-
 export default App;
