@@ -41,6 +41,16 @@ export const CATEGORY_COLORS: Record<NodeCategory, string> = {
   array: '#34d399',
 };
 
+export const CATEGORY_ICONS: Record<NodeCategory, string> = {
+  flow: '⤨',
+  logic: '⚖️',
+  math: '🧮',
+  variable: 'X',
+  io: '🔌',
+  event: '⚡',
+  array: '◫',
+}
+
 export const PORT_COLORS: Record<PortType, string> = {
   exec: '#f59e0b',
   number: '#6366f1',
