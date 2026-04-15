@@ -65,3 +65,10 @@ export interface ViewportState {
   y: number;
   zoom: number;
 }
+
+export interface ConsoleEntry {
+  id: string;
+  type: 'log' | 'error' | 'warn' | 'info';
+  message: string;
+  timestamp: number;
+}
