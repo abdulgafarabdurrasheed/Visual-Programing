@@ -72,4 +72,55 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
             ],
         }),
     },
+      // ── Logic Nodes ──
+  {
+    type: 'boolean_literal',
+    label: 'Boolean',
+    category: 'logic',
+    description: 'A true/false value',
+    createNode: (x, y, id) => ({
+      id, type: 'boolean_literal', label: 'Boolean', category: 'logic', x, y,
+      inputs: [],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'boolean', direction: 'output' },
+      ],
+      data: { value: true },
+    }),
+  },
+  {
+    type: 'compare',
+    label: 'Compare',
+    category: 'logic',
+    description: 'Compare two numbers',
+    createNode: (x, y, id) => ({
+      id, type: 'compare', label: 'Compare', category: 'logic', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'number', direction: 'input', value: 0 },
+        { id: uid(), label: 'B', type: 'number', direction: 'input', value: 0 },
+      ],
+      outputs: [
+        { id: uid(), label: 'A > B', type: 'boolean', direction: 'output' },
+        { id: uid(), label: 'A == B', type: 'boolean', direction: 'output' },
+        { id: uid(), label: 'A < B', type: 'boolean', direction: 'output' },
+      ],
+      data: { operator: '>' },
+    }),
+  },
+  {
+    type: 'if_else',
+    label: 'If / Else',
+    category: 'logic',
+    description: 'Branch execution based on a condition',
+    createNode: (x, y, id) => ({
+      id, type: 'if_else', label: 'If / Else', category: 'logic', x, y,
+      inputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'input' },
+        { id: uid(), label: 'Condition', type: 'boolean', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'True', type: 'exec', direction: 'output' },
+        { id: uid(), label: 'False', type: 'exec', direction: 'output' },
+      ],
+    }),
+  },
 ];
