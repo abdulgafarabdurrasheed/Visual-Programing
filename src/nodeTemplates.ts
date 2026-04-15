@@ -123,4 +123,35 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     }),
   },
+  {
+    type: 'set_variable',
+    label: 'Set Variable',
+    category: 'variable',
+    description: 'Store a value in a named variable',
+    createNode: (x, y, id) => ({
+      id, type: 'set_variable', label: 'Set Variable', category: 'variable', x, y,
+      inputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'input' },
+        { id: uid(), label: 'Value', type: 'any', direction: 'input', value: 0 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'output' },
+      ],
+      data: { varName: 'myVar' },
+    }),
+  },
+  {
+    type: 'get_variable',
+    label: 'Get Variable',
+    category: 'variable',
+    description: 'Read a stored variable',
+    createNode: (x, y, id) => ({
+      id, type: 'get_variable', label: 'Get Variable', category: 'variable', x, y,
+      inputs: [],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'any', direction: 'output' },
+      ],
+      data: { varName: 'myVar' },
+    }),
+  },
 ];

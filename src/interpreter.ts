@@ -3,6 +3,7 @@ import type { NodeData, Wire } from './types';
 export class Interpreter {
   private nodes: Map<string, NodeData>;
   private wires: Wire[];
+  private variables: Map<string, any> = new Map();
 
   constructor(nodes: NodeData[], wires: Wire[]) {
     this.nodes = new Map(nodes.map(n => [n.id, n]));
@@ -31,6 +32,8 @@ export class Interpreter {
         if (outIdx === 1) return a === b;
         return a < b;
       }
+      case 'get_variable':
+        return this.variables.get(node.data?.varName ?? 'undefined');
 
       default: return undefined;
     }
@@ -87,16 +90,40 @@ export class Interpreter {
         }
         break
       }
+      case 'set_variable': {
+        const valPort = node.inputs.find(p => p.label === 'Value');
+        const val = valPort ? this.resolveInputValue(node, valPort.id) : undefined
+        const varName = node.data?.varName ?? 'undefined';
+        this.variables.set(varName, val);
+        console.log(`[NodeScript]: Set ${varName} = ${JSON.stringify(val)}`);
+        const execOut = node.outputs.find(p => p.type === 'exec');
+        if (execOut) {
+          const next = this.getNextExecNode(execOut.id);
+          if (next) await this.executeNode(next.node);
+        }
+        break;
+      }
+      case 'start': {
+        const execOut = node.outputs.find(p => p.type === 'exec');
+        if (execOut) {
+          const next = this.getNextExecNode(execOut.id);
+          if (next) await this.executeNode(next.node);
+        }
+        break;
+      }
     }
   }
 
   async run() {
-    console.log('Program started');
-    const printNode = Array.from(this.nodes.values()).find(n => n.type === 'print');
-    
-    if (printNode) await this.executeNode(printNode);
-    else console.error('No Print node found!');
-    
-    console.log('Program finished');
+    this.variables.clear();
+    console.log('▶ Program started');
+    const startNode = Array.from(this.nodes.values()).find(n => n.type === 'start');
+    if (!startNode) {
+      console.error('No Start Program node found!');
+      return;
+    }
+    await this.executeNode(startNode);
+    console.log('■ Program finished');
   }
+
 }
