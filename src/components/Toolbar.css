@@ -1,0 +1,54 @@
+.toolbar-container {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    z-index: 50;
+    background: #12121e;
+    border: 1px solid #1e1e3a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.tb-run-btn {
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    border: none;
+    cursor: pointer;
+    min-width: 100px;
+    transition: all 0.2s;
+}
+
+.tb-divider {
+    width: 1px;
+    height: 24px;
+    margin: 0 8px;
+    background: rgba(100, 116, 139, 0.3);
+}
+
+.tb-action-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    background: transparent;
+    transition: color 0.2s;
+}
+.tb-action-btn:hover { color: #e2e8f0; }
+
+.tb-stats {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 10px;
+    color: #64748b;
+}
