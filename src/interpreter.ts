@@ -35,7 +35,10 @@ export class Interpreter {
       case 'get_variable':
         return this.variables.get(node.data?.varName ?? 'undefined');
 
-      default: return undefined;
+      default: {
+        const outPort = node.outputs.find(p => p.id === arguments[1]);
+        return outPort?.value;
+      };
     }
   }
 
@@ -110,6 +113,62 @@ export class Interpreter {
           if (next) await this.executeNode(next.node);
         }
         break;
+      }
+      case 'for_loop': {
+        const countPort = node.inputs.find(p => p.label === 'Count');
+        const count = Number(countPort ? this.resolveInputValue(node, countPort.id) : 0);
+        const bodyPort = node.outputs.find(p => p.label === 'Loop Body');
+        const indexPort = node.outputs.find(p => p.label === 'Index');
+        const donePort = node.outputs.find(p => p.label === 'Completed');
+
+        console.log(`[NodeScript]: For Loop: iterating ${count} times`)
+        for (let i = 0; i < count; i++) {
+          if (indexPort) indexPort.value = i;
+          if (bodyPort) {
+            const next = this.getNextExecNode(bodyPort.id);
+            if (next) await this.executeNode(next.node)
+          }
+        }
+        if (donePort) {
+          const next = this.getNextExecNode(donePort.id);
+          if (next) await this.executeNode(next.node);
+        }
+        break;
+      }
+      case 'while_loop': {
+        const condPort = node.inputs.find(p => p.label === 'Condition');
+        const bodyPort = node.outputs.find(p => p.label === 'Loop Body');
+        const donePort = node.outputs.find(p => p.label === 'Completed' );
+
+        let iterations = 0;
+        const maxIterations = 1000;
+
+        while (iterations < maxIterations) {
+          const cond = condPort ? this.resolveInputValue(node, condPort.id) : false;
+          if (!cond) break
+          iterations++
+          if (bodyPort) {
+            const next = this.getNextExecNode(bodyPort.id);
+            if (next) await this.executeNode(next.node)
+          }
+        }
+
+        console.log(`[NodeScript]: While Loop: completed after ${iterations} iterations`);
+
+        if (donePort) {
+          const next = this.getNextExecNode(donePort.id);
+          if (next) await this.executeNode(next.node);
+        }
+        break;
+      }
+      case 'sequence': {
+        for (const out of node.outputs) {
+          if (out.type === 'exec') {
+            const next = this.getNextExecNode(out.id);
+            if (next) await this.executeNode(next.node);
+          }
+        }
+        break
       }
     }
   }

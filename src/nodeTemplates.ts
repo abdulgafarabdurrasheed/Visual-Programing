@@ -154,4 +154,56 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       data: { varName: 'myVar' },
     }),
   },
+  {
+    type: 'for_loop',
+    label: 'For Loop',
+    category: 'flow',
+    description: 'Repeat execution a set number of times',
+    createNode: (x, y, id) => ({
+      id, type: 'for_loop', label: 'For Loop', category: 'flow', x, y,
+      inputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'input' },
+        { id: uid(), label: 'Count', type: 'number', direction: 'input', value: 5 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Loop Body', type: 'exec', direction: 'output' },
+        { id: uid(), label: 'Index', type: 'number', direction: 'output' },
+        { id: uid(), label: 'Completed', type: 'exec', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'while_loop',
+    label: 'While Loop',
+    category: 'flow',
+    description: 'Repeat while condition is true',
+    createNode: (x, y, id) => ({
+      id, type: 'while_loop', label: 'While Loop', category: 'flow', x, y,
+      inputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'input' },
+        { id: uid(), label: 'Condition', type: 'boolean', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Loop Body', type: 'exec', direction: 'output' },
+        { id: uid(), label: 'Completed', type: 'exec', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'sequence',
+    label: 'Sequence',
+    category: 'flow',
+    description: 'Execute multiple branches in order',
+    createNode: (x, y, id) => ({
+      id, type: 'sequence', label: 'Sequence', category: 'flow', x, y,
+      inputs: [
+        { id: uid(), label: 'Exec', type: 'exec', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Then 0', type: 'exec', direction: 'output' },
+        { id: uid(), label: 'Then 1', type: 'exec', direction: 'output' },
+        { id: uid(), label: 'Then 2', type: 'exec', direction: 'output' },
+      ],
+    }),
+  },
 ];
