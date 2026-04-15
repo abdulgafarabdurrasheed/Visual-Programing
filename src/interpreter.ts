@@ -35,6 +35,40 @@ export class Interpreter {
       case 'get_variable':
         return this.variables.get(node.data?.varName ?? 'undefined');
 
+      case 'subtract': {
+        const a = Number(this.resolveInputValue(node, node.inputs[0].id) ?? 0);
+        const b = Number(this.resolveInputValue(node, node.inputs[1].id) ?? 0);
+        return a - b;
+      }
+      case 'multiply': {
+        const a = Number(this.resolveInputValue(node, node.inputs[0].id) ?? 0);
+        const b = Number(this.resolveInputValue(node, node.inputs[1].id) ?? 0);
+        return a * b;
+      }
+      case 'to_string': {
+        const val = this.resolveInputValue(node, node.inputs[0].id);
+        return String(val)
+      }
+      case 'array_literal': {
+        const raw = String(node.data?.value ?? '');
+        return raw.split(',').map(s => {
+          const trimmed = s.trim();
+          if (trimmed === '') return '';
+          if (!isNaN(Number(trimmed)) && trimmed !== '') return Number(trimmed);
+          return trimmed
+        });
+      }
+      case 'array_get': {
+        const arr = this.resolveInputValue(node, node.inputs[0].id) as any[];
+        const idx = Number(this.resolveInputValue(node, node.inputs[1].id));
+        if (!Array.isArray(arr)) return undefined;
+        return arr[idx];
+      }
+      case 'array_length': {
+        const arr = this.resolveInputValue(node, node.inputs[0].id) as any[];
+        if (!Array.isArray(arr)) return 0;
+        return arr.length
+      }
       default: {
         const outPort = node.outputs.find(p => p.id === arguments[1]);
         return outPort?.value;

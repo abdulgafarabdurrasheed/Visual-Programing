@@ -72,7 +72,6 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
             ],
         }),
     },
-      // ── Logic Nodes ──
   {
     type: 'boolean_literal',
     label: 'Boolean',
@@ -203,6 +202,112 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
         { id: uid(), label: 'Then 0', type: 'exec', direction: 'output' },
         { id: uid(), label: 'Then 1', type: 'exec', direction: 'output' },
         { id: uid(), label: 'Then 2', type: 'exec', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'subtract',
+    label: 'Subtract',
+    category: 'math',
+    description: 'Subtract two numbers',
+    createNode: (x, y, id) => ({
+      id, type: 'subtract', label: 'Subtract', category: 'math', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'number', direction: 'input', value: 0 },
+        { id: uid(), label: 'B', type: 'number', direction: 'input', value: 0 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'number', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'multiply',
+    label: 'Multiply',
+    category: 'math',
+    description: 'Multiply two numbers',
+    createNode: (x, y, id) => ({
+      id, type: 'multiply', label: 'Multiply', category: 'math', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'number', direction: 'input', value: 0 },
+        { id: uid(), label: 'B', type: 'number', direction: 'input', value: 0 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'number', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'string_literal',
+    label: 'String',
+    category: 'io',
+    description: 'A constant string value',
+    createNode: (x, y, id) => ({
+      id, type: 'string_literal', label: 'string', category: 'io', x, y, 
+      inputs: [],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'string', direction: 'output' },
+      ],
+      data: { value: 'Hello!' },
+    }),
+  },
+  {
+    type: 'to_string',
+    label: 'To String',
+    category: 'io',
+    description: 'Convert any value to string',
+    createNode: (x, y, id) => ({
+      id, type: 'to_string', label: 'To String', category: 'io', x, y, 
+      inputs: [
+        { id: uid(), label: 'Input', type: 'any', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Text', type: 'string', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'array_literal',
+    label: 'Array Literal',
+    category: 'array',
+    description: 'Comma separated list of values to make an array',
+    createNode: (x, y, id) => ({
+      id, type: 'array_literal', label: 'Array Literal', category: 'array', x, y,
+      inputs: [],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'array', direction: 'output' },
+      ],
+      data: { value: '1, 2, 3' },
+    }),
+  },
+  {
+    type: 'array_get',
+    label: 'Array Get',
+    category: 'array',
+    description: 'Get an element from an array by index',
+    createNode: (x, y, id) => ({
+      id, type: 'array_get', label: 'Array Get', category: 'array', x, y,
+      inputs: [
+        { id: uid(), label: 'Array', type: 'array', direction: 'input' },
+        { id: uid(), label: 'Index', type: 'number', direction: 'input', value: 0 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'any', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'array_length',
+    label: 'Array Length',
+    category: 'array',
+    description: 'Get the number of elements in an array',
+    createNode: (x, y, id) => ({
+      id, type: 'array_length', label: 'Array Length', category: 'array', x, y,
+      inputs: [
+        { id: uid(), label: 'Array', type: 'array', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Length', type: 'number', direction: 'output' }
       ],
     }),
   },
