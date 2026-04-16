@@ -13,9 +13,69 @@ import ContextMenu from './components/ContextMenu';
 let _nodeIdCounter = 0;
 const newId = () => `node_${++_nodeIdCounter}_${Date.now()}`;
 
+
+function createDemoGraph(): { nodes: NodeData[]; wires: Wire[] } {
+  const nodes: NodeData[] = [];
+  const wires: Wire[] = [];
+  const t = (type: string) => NODE_TEMPLATES.find(n => n.type === type)!;
+
+  const startNode = t('start').createNode(60, 160, newId());
+  nodes.push(startNode);
+
+  const setSum0 = t('set_variable').createNode(320, 140, newId());
+  setSum0.data = { varName: 'sum' };
+  setSum0.inputs[1].value = 0;
+  nodes.push(setSum0);
+
+  const forLoop = t('for_loop').createNode(620, 120, newId());
+  forLoop.inputs[1].value = 10;
+  nodes.push(forLoop);
+
+  const getSum = t('get_variable').createNode(620, 380, newId());
+  getSum.data = { varName: 'sum' };
+  nodes.push(getSum);
+
+  const addOne = t('add').createNode(620, 520, newId());
+  addOne.inputs[1].value = 1;
+  nodes.push(addOne);
+
+  const addToSum = t('add').createNode(920, 420, newId());
+  nodes.push(addToSum);
+
+  const setSumNew = t('set_variable').createNode(1200, 340, newId());
+  setSumNew.data = { varName: 'sum' };
+  nodes.push(setSumNew);
+
+  const getSumFinal = t('get_variable').createNode(920, 120, newId());
+  getSumFinal.data = { varName: 'sum' };
+  nodes.push(getSumFinal);
+
+  const toStr = t('to_string').createNode(1140, 140, newId());
+  nodes.push(toStr);
+
+  const printResult = t('print').createNode(1380, 100, newId());
+  printResult.inputs[1].value = '';
+  nodes.push(printResult);
+
+  wires.push({ id: 'w1', fromNodeId: startNode.id, fromPortId: startNode.outputs[0].id, toNodeId: setSum0.id, toPortId: setSum0.inputs[0].id, type: 'exec' });
+  wires.push({ id: 'w2', fromNodeId: setSum0.id, fromPortId: setSum0.outputs[0].id, toNodeId: forLoop.id, toPortId: forLoop.inputs[0].id, type: 'exec' });
+  wires.push({ id: 'w3', fromNodeId: forLoop.id, fromPortId: forLoop.outputs[0].id, toNodeId: setSumNew.id, toPortId: setSumNew.inputs[0].id, type: 'exec' });
+  wires.push({ id: 'w4', fromNodeId: forLoop.id, fromPortId: forLoop.outputs[2].id, toNodeId: printResult.id, toPortId: printResult.inputs[0].id, type: 'exec' });
+
+  wires.push({ id: 'w5', fromNodeId: forLoop.id, fromPortId: forLoop.outputs[1].id, toNodeId: addOne.id, toPortId: addOne.inputs[0].id, type: 'number' });
+  wires.push({ id: 'w6', fromNodeId: getSum.id, fromPortId: getSum.outputs[0].id, toNodeId: addToSum.id, toPortId: addToSum.inputs[0].id, type: 'any' });
+  wires.push({ id: 'w7', fromNodeId: addOne.id, fromPortId: addOne.outputs[0].id, toNodeId: addToSum.id, toPortId: addToSum.inputs[1].id, type: 'number' });
+  wires.push({ id: 'w8', fromNodeId: addToSum.id, fromPortId: addToSum.outputs[0].id, toNodeId: setSumNew.id, toPortId: setSumNew.inputs[1].id, type: 'number' });
+  wires.push({ id: 'w9', fromNodeId: getSumFinal.id, fromPortId: getSumFinal.outputs[0].id, toNodeId: toStr.id, toPortId: toStr.inputs[0].id, type: 'any' });
+  wires.push({ id: 'w10', fromNodeId: toStr.id, fromPortId: toStr.outputs[0].id, toNodeId: printResult.id, toPortId: printResult.inputs[1].id, type: 'string' });
+
+  return { nodes, wires };
+}
+
 const App: React.FC = () => {
-  const [nodes, setNodes] = useState<NodeData[]>([]);
-  const [wires, setWires] = useState<Wire[]>([]);
+  const demo = useRef(createDemoGraph());
+  const [nodes, setNodes] = useState<NodeData[]>(demo.current.nodes);
+  const [wires, setWires] = useState<Wire[]>(demo.current.wires);
   const [viewport, setViewport] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
