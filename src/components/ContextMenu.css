@@ -1,0 +1,56 @@
+.ctx-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999
+}
+
+.ctx-menu {
+    position: fixed;
+    width: 240px;
+    max-height: 360px;
+    z-index: 1000;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #16162a 0%, #12121e) 100%;
+    border: 1px solid #2a2a4a;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 1px rgba(99, 102, 241, 0.2);
+}
+
+.ctx-search-wrap {
+    padding: 8px;
+    border-bottom: 1px solid #1e1e3a;
+}
+
+.ctx-search {
+  width: 100%;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2a4a;
+  background: #0a0a14;
+  color: #e2e8f0;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.ctx-list {
+    overflow-y: auto;
+    max-height: 290px;
+}
+
+.ctx-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    transition: background 0.15s;
+}
+
+.ctx-item-label { font-size: 12px; font-weight: 500; color: #e2e8f0; }
+.ctx-item-desc { font-size: 10px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctx-item-bar { width: 4px; height: 20px; border-radius: 9999px; }
