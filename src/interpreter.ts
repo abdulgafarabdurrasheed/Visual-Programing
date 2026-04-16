@@ -21,6 +21,20 @@ export class Interpreter {
   }
   stop() { this.running = false; }
 
+  private log(type: ConsoleEntry['type'], message: string) {
+    const entry: ConsoleEntry = {
+      id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      type, message, timestamp: Date.now(),
+    };
+    this.onConsole(entry);
+  }
+
+  private delay(ms: number) {
+    return new Promise(res => setTimeout(res, ms));
+  }
+
+  private stepDelay = 350;
+
   private getOutgoingWires(portId: string): Wire[] { return this.wires.filter(w => w.fromPortId === portId); }
   private getIncomingWire(portId: string): Wire | undefined { return this.wires.find(w => w.toPortId === portId); }
 
@@ -107,12 +121,17 @@ export class Interpreter {
   }
 
   async executeNode(node: NodeData): Promise<void> {
+    if (!this.running) return;
+    this.onNodeActive(node.id);
+    await
+    this.delay(this.stepDelay)
+    
     switch (node.type) {
       case 'print': {
         const msgPort = node.inputs.find(p => p.label === 'Message');
         const message = msgPort ? this.resolveInputValue(node, msgPort.id) : 'undefined';
         
-        console.log(`[NodeScript]: ${message}`);
+        this.log('log', String(message))
         
         const execOut = node.outputs.find(p => p.type === 'exec');
         if (execOut) {
@@ -128,11 +147,11 @@ export class Interpreter {
         const falsePort = node.outputs.find(p => p.label === 'False');
 
         if (cond && truePort) {
-          console.log('[NodeScript]: Condition: true -> Branching to true');
+          this.log('info', 'Condition: true → taking True branch')
           const next = this.getNextExecNode(truePort.id);
           if (next) await this.executeNode(next.node);
         } else if (!cond && falsePort) {
-          console.log('[NodeScript]: Condition: false -> Branching to false')
+          this.log('info', 'Condition: false → taking false branch')
           const next = this.getNextExecNode(falsePort.id);
           if (next) await this.executeNode(next.node)
         }
@@ -143,7 +162,7 @@ export class Interpreter {
         const val = valPort ? this.resolveInputValue(node, valPort.id) : undefined
         const varName = node.data?.varName ?? 'undefined';
         this.variables.set(varName, val);
-        console.log(`[NodeScript]: Set ${varName} = ${JSON.stringify(val)}`);
+        this.log('info', `Set ${varName} = ${JSON.stringify(val)}`)
         const execOut = node.outputs.find(p => p.type === 'exec');
         if (execOut) {
           const next = this.getNextExecNode(execOut.id);
@@ -166,7 +185,7 @@ export class Interpreter {
         const indexPort = node.outputs.find(p => p.label === 'Index');
         const donePort = node.outputs.find(p => p.label === 'Completed');
 
-        console.log(`[NodeScript]: For Loop: iterating ${count} times`)
+        this.log('info', `For Loop: iterating ${count} times`)
         for (let i = 0; i < count; i++) {
           if (indexPort) indexPort.value = i;
           if (bodyPort) {
@@ -198,7 +217,7 @@ export class Interpreter {
           }
         }
 
-        console.log(`[NodeScript]: While Loop: completed after ${iterations} iterations`);
+      this.log('info', `While Loop: completed after ${iterations} iterations`)
 
         if (donePort) {
           const next = this.getNextExecNode(donePort.id);
@@ -219,15 +238,20 @@ export class Interpreter {
   }
 
   async run() {
+    this.running = true;
     this.variables.clear();
-    console.log('▶ Program started');
     const startNode = Array.from(this.nodes.values()).find(n => n.type === 'start');
     if (!startNode) {
-      console.error('No Start Program node found!');
+      this.log('error', 'No Start Program node found!');
+      this.onNodeActive(null);
       return;
     }
+    this.log('info', '▶ Program started');
     await this.executeNode(startNode);
-    console.log('■ Program finished');
+    this.log('info', '■ Program finished');
+    this.onNodeActive(null);
+    this.running = false;
   }
+
 
 }
