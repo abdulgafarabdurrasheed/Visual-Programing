@@ -38,7 +38,7 @@ export class Interpreter {
   private getOutgoingWires(portId: string): Wire[] { return this.wires.filter(w => w.fromPortId === portId); }
   private getIncomingWire(portId: string): Wire | undefined { return this.wires.find(w => w.toPortId === portId); }
 
-  private evaluateNode(node: NodeData): any {
+  private evaluateNode(node: NodeData, outputPortId?: string): any {
     switch (node.type) {
       case 'string_literal': return String(node.data?.value ?? '');
       case 'number_literal': return Number(node.data?.value ?? 0);
@@ -52,7 +52,7 @@ export class Interpreter {
       case 'compare': {
         const a = Number(this.resolveInputValue(node, node.inputs[0].id) ?? 0);
         const b = Number(this.resolveInputValue(node, node.inputs[1].id) ?? 0);
-        const outIdx = node.outputs.findIndex(p => p.id === arguments[1]);
+        const outIdx = node.outputs.findIndex(p => p.id === outputPortId);
         if (outIdx === 0) return a > b;
         if (outIdx === 1) return a === b;
         return a < b;
@@ -95,7 +95,7 @@ export class Interpreter {
         return arr.length
       }
       default: {
-        const outPort = node.outputs.find(p => p.id === arguments[1]);
+        const outPort = node.outputs.find(p => p.id === outputPortId);
         return outPort?.value;
       };
     }
@@ -108,7 +108,7 @@ export class Interpreter {
     
     const sourceNode = this.nodes.get(wire.fromNodeId);
     if (!sourceNode) return port?.value;
-    return this.evaluateNode(sourceNode);
+    return this.evaluateNode(sourceNode, wire.fromPortId);
   }
 
   private getNextExecNode(portId: string): { node: NodeData; inputPortId: string } | null {

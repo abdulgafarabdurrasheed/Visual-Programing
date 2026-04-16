@@ -42,13 +42,13 @@ export const CATEGORY_COLORS: Record<NodeCategory, string> = {
 };
 
 export const CATEGORY_ICONS: Record<NodeCategory, string> = {
-  flow: '⤨',
-  logic: '⚖️',
-  math: '🧮',
-  variable: 'X',
-  io: '🔌',
-  event: '⚡',
-  array: '◫',
+  flow: '⚡',
+  logic: '🔀',
+  math: '🔢',
+  variable: '📦',
+  io: '💬',
+  event: '🎯',
+  array: '📊',
 }
 
 export const PORT_COLORS: Record<PortType, string> = {

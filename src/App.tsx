@@ -9,6 +9,7 @@ import NodePalette from './components/NodePalette';
 import ConsolePanel from './components/ConsolePanel';
 import Toolbar from './components/Toolbar';
 import ContextMenu from './components/ContextMenu';
+import Tutorial from './components/Tutorial';
 
 let _nodeIdCounter = 0;
 const newId = () => `node_${++_nodeIdCounter}_${Date.now()}`;
@@ -73,9 +74,11 @@ function createDemoGraph(): { nodes: NodeData[]; wires: Wire[] } {
 }
 
 const App: React.FC = () => {
-  const demo = useRef(createDemoGraph());
-  const [nodes, setNodes] = useState<NodeData[]>(demo.current.nodes);
-  const [wires, setWires] = useState<Wire[]>(demo.current.wires);
+  const tutorialDone = (() => { try { return localStorage.getItem('nodescript_tutorial_done') === '1'; } catch { return false; } })();
+  const initialDemo = tutorialDone ? createDemoGraph() : { nodes: [], wires: [] };
+  const [nodes, setNodes] = useState<NodeData[]>(initialDemo.nodes);
+  const [wires, setWires] = useState<Wire[]>(initialDemo.wires);
+  const [showTutorial, setShowTutorial] = useState(!tutorialDone);
   const [viewport, setViewport] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
@@ -281,9 +284,21 @@ const App: React.FC = () => {
   }, []);
 
   const handleNodeDataChange = useCallback((nodeId: string, data: Record<string, any>) => {
-    setNodes(prev => prev.map(n =>
-      n.id === nodeId ? { ...n, data: { ...n.data, ...data } } : n
-    ));
+    setNodes(prev => prev.map(n => {
+      if (n.id !== nodeId) return n;
+
+      const portKey = Object.keys(data).find(k => k.startsWith('__port__'));
+      if (portKey) {
+        const portId = portKey.replace('__port__', '');
+        const value = data[portKey];
+        return {
+          ...n,
+          inputs: n.inputs.map(p => p.id === portId ? { ...p, value } : p),
+        };
+      }
+
+      return { ...n, data: { ...n.data, ...data } };
+    }));
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -378,6 +393,7 @@ const App: React.FC = () => {
                 <NodeComponent
                   key={node.id}
                   node={node}
+                  isActive={activeNodeId === node.id}
                   isSelected={selectedNodeId === node.id}
                   onMouseDown={handleNodeMouseDown}
                   onPortMouseDown={handlePortMouseDown}
@@ -385,6 +401,27 @@ const App: React.FC = () => {
                   onNodeDataChange={handleNodeDataChange}
                 />
               ))}
+            </div>
+
+            {/* Keyboard shortcuts hint */}
+            <div
+              style={{
+                position: 'absolute', bottom: 16, right: 16,
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '6px 14px', borderRadius: 10,
+                fontSize: 10, color: '#475569', fontWeight: 500,
+                pointerEvents: 'none',
+                background: 'rgba(18, 18, 30, 0.7)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+              }}
+            >
+              <span>Pan: Middle Click / Empty Space</span>
+              <span>·</span>
+              <span>Zoom: Scroll</span>
+              <span>·</span>
+              <span>Delete: Select + Del</span>
             </div>
           </div>
 
@@ -403,6 +440,19 @@ const App: React.FC = () => {
           y={contextMenu.y}
           onAddNode={handleContextAddNode}
           onClose={() => setContextMenu(null)}
+        />
+      )}
+
+      {showTutorial && (
+        <Tutorial
+          nodes={nodes}
+          onComplete={() => setShowTutorial(false)}
+          onLoadDemo={() => {
+            const demo = createDemoGraph();
+            setNodes(demo.nodes);
+            setWires(demo.wires);
+          }}
+          onSkip={() => setShowTutorial(false)}
         />
       )}
     </div>

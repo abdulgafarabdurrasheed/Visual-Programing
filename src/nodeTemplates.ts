@@ -16,7 +16,7 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
         type: 'start',
         label: 'Start Program',
         category: 'event',
-        description: 'Entry Point. Where every Execution Begins',
+        description: 'Entry point — execution begins here',
         createNode: (x, y, id) => ({ id, type: 'start', label: 'Start Program', category: 'event', x, y, 
             inputs: [],
             outputs: [

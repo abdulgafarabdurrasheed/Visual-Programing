@@ -45,7 +45,6 @@ const NodePalette: React.FC = () => {
     <div className="node-palette-container">
       <div className="np-header">
         <div className="np-title-row">
-          <div className="np-icon-box"><span style={{ fontSize: '12px' }}>⚡</span></div>
           <h2 className="np-title">NODES</h2>
         </div>
         <input 
