@@ -1,14 +1,25 @@
-import type { NodeData, Wire } from './types';
+import type { ConsoleEntry, NodeData, Wire } from './types';
 
 export class Interpreter {
   private nodes: Map<string, NodeData>;
   private wires: Wire[];
   private variables: Map<string, any> = new Map();
-
-  constructor(nodes: NodeData[], wires: Wire[]) {
+  private onConsole: (entry: ConsoleEntry) => void;
+  private onNodeActive: (nodeId: string | null) => void;
+  private running = false;
+  
+  constructor(
+    nodes: NodeData[],
+    wires: Wire[],
+    onConsole: (entry: ConsoleEntry) => void,
+    onNodeActive: (nodeId: string | null) => void,
+  ) {
     this.nodes = new Map(nodes.map(n => [n.id, n]));
     this.wires = wires;
+    this.onConsole = onConsole;
+    this.onNodeActive = onNodeActive;
   }
+  stop() { this.running = false; }
 
   private getOutgoingWires(portId: string): Wire[] { return this.wires.filter(w => w.fromPortId === portId); }
   private getIncomingWire(portId: string): Wire | undefined { return this.wires.find(w => w.toPortId === portId); }

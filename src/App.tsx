@@ -1,10 +1,14 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import type { ViewportState, NodeData, Wire, PortType } from './types';
+import type { NodeData, Wire, PortType, ConsoleEntry, ViewportState } from './types';
+import type { NodeTemplate } from './nodeTemplates';
+import { NODE_TEMPLATES } from './nodeTemplates';
+import { Interpreter } from './interpreter';
 import NodeComponent from './components/NodeComponent';
 import WireLayer from './components/WireLayer';
-import { Interpreter } from './interpreter';
 import NodePalette from './components/NodePalette';
-import { NODE_TEMPLATES } from './nodeTemplates';
+import ConsolePanel from './components/ConsolePanel';
+import Toolbar from './components/Toolbar';
+import ContextMenu from './components/ContextMenu';
 
 let _nodeIdCounter = 0;
 const newId = () => `node_${++_nodeIdCounter}_${Date.now()}`;
@@ -14,6 +18,12 @@ const App: React.FC = () => {
   const [wires, setWires] = useState<Wire[]>([]);
   const [viewport, setViewport] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
+  const [consoleEntries, setConsoleEntries] = useState<ConsoleEntry[]>([]);
+  const [consoleOpen, setConsoleOpen] = useState(true);
+  const [isRunning, setIsRunning] = useState(false)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+  const interpreterRef = useRef<Interpreter | null>(null);
 
   const [drawingWire, setDrawingWire] = useState<{
     isDrawing: boolean;
@@ -121,6 +131,32 @@ const App: React.FC = () => {
     }
   }, [viewport]);
 
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
+  const handleContextAddNode = useCallback((template: NodeTemplate) => {
+    if (!contextMenu) return;
+    const boardPos = screenToBoard(contextMenu.x, contextMenu.y);
+    const node = template.createNode(boardPos.x, boardPos.y, newId());
+    setNodes(prev => [...prev, node]);
+    setContextMenu(null)
+  }, [contextMenu, screenToBoard])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Delete' && selectedNodeId) {
+        setNodes(prev => prev.filter(n => n.id !== selectedNodeId));
+        setWires(prev => prev.filter(w => w.fromNodeId !== selectedNodeId && w.toNodeId !== selectedNodeId));
+        setSelectedNodeId(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNodeId])
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (dragging) {
@@ -202,61 +238,113 @@ const App: React.FC = () => {
   }, [screenToBoard]);
 
   const handleRun = useCallback(() => {
-    const engine = new Interpreter(nodes, wires);
-    engine.run();
-  }, [nodes, wires]);
+    if (isRunning) return;
+    setIsRunning(true);
+    setConsoleOpen(true);
+    const interpreter = new Interpreter(
+      nodes,
+      wires,
+      (entry) => setConsoleEntries(prev => [...prev, entry]),
+      (nodeId) => setActiveNodeId(nodeId),
+    );
+    interpreterRef.current = interpreter;
+    interpreter.run().then(() => {
+      setIsRunning(false);
+      setActiveNodeId(null);
+    });
+  }, [nodes, wires, isRunning]);
+
+  const handleStop = useCallback(() => {
+    interpreterRef.current?.stop();
+    setIsRunning(false);
+    setActiveNodeId(null);
+  }, []);
+
+  const handleClear = useCallback(() => {
+    if (isRunning) return;
+    setNodes([]);
+    setWires([]);
+    setSelectedNodeId(null);
+  }, [isRunning]);
+
+  const handleFitView = useCallback(() => {
+    setViewport({ x: 0, y: 0, zoom: 1 });
+  }, []);
 
   const gridSize = 20 * viewport.zoom;
   const gridOffsetX = viewport.x % gridSize;
   const gridOffsetY = viewport.y % gridSize;
 
-  return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', flexDirection: 'row' }}>
+    return (
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100vh', position: 'relative' }}>
+      <Toolbar
+        onRun={handleRun}
+        onStop={handleStop}
+        onClear={handleClear}
+        onFitView={handleFitView}
+        isRunning={isRunning}
+        nodeCount={nodes.length}
+        wireCount={wires.length}
+        zoom={viewport.zoom}
+      />
 
-      <NodePalette />
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative' }}>
+        <NodePalette />
 
-      <div style={{ position: 'absolute', top: '20px', left: '60%', transform: 'translateX(-50%)', zIndex: 999 }}>
-        <button
-          onClick={handleRun}
-          style={{ padding: '10px 30px', fontSize: '18px', fontWeight: 'bold', backgroundColor: 'var(--accent)', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)' }}
-        >
-          ▶ RUN
-        </button>
-      </div>
-      <div
-        ref={boardRef}
-        style={{
-          flex: 1, position: 'relative', overflow: 'hidden',
-          cursor: panning ? 'grabbing' : 'grab',
-          backgroundImage: `radial-gradient(circle at ${gridOffsetX}px ${gridOffsetY}px, var(--border-dim) 1px, transparent 1px)`,
-          backgroundSize: `${gridSize}px ${gridSize}px`,
-        }}
-        onMouseDown={handleBoardMouseDown}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
-        <div
-          style={{
-            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-            transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
-            transformOrigin: '0 0',
-          }}
-        >
-          <WireLayer wires={wires} nodes={nodes} drawingWire={drawingWire} />
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, position: 'relative' }}>
+          <div
+            ref={boardRef}
+            style={{
+              flex: 1, position: 'relative', overflow: 'hidden',
+              cursor: panning ? 'grabbing' : dragging ? 'default' : 'grab',
+              backgroundImage: `radial-gradient(circle at ${gridOffsetX}px ${gridOffsetY}px, #1a1a2e 1px, transparent 1px)`,
+              backgroundSize: `${gridSize}px ${gridSize}px`,
+            }}
+            onMouseDown={handleBoardMouseDown}
+            onContextMenu={handleContextMenu}
+            onDrop={handleDrop}
+            onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }}
+          >
+            <div
+              style={{
+                transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+                transformOrigin: '0 0',
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              }}
+            >
+              <WireLayer wires={wires} nodes={nodes} drawingWire={drawingWire} />
 
-          {nodes.map(node => (
-            <NodeComponent
-              key={node.id}
-              node={node}
-              isSelected={selectedNodeId === node.id}
-              onMouseDown={handleNodeMouseDown}
-              onPortMouseDown={handlePortMouseDown}
-              onPortMouseUp={handlePortMouseUp}
-              onNodeDataChange={handleNodeDataChange}
-            />
-          ))}
+              {nodes.map(node => (
+                <NodeComponent
+                  key={node.id}
+                  node={node}
+                  isSelected={selectedNodeId === node.id}
+                  onMouseDown={handleNodeMouseDown}
+                  onPortMouseDown={handlePortMouseDown}
+                  onPortMouseUp={handlePortMouseUp}
+                  onNodeDataChange={handleNodeDataChange}
+                />
+              ))}
+            </div>
+          </div>
+
+          <ConsolePanel
+            entries={consoleEntries}
+            onClear={() => setConsoleEntries([])}
+            isOpen={consoleOpen}
+            onToggle={() => setConsoleOpen(!consoleOpen)}
+          />
         </div>
       </div>
+
+      {contextMenu && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onAddNode={handleContextAddNode}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 };

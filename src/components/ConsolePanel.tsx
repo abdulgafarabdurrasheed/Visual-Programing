@@ -3,7 +3,7 @@ import type { ConsoleEntry } from '../types';
 import './ConsolePanel.css';
 
 interface ConsolePanelProps {
-  entries: ConsoleEntry[];  \\
+  entries: ConsoleEntry[];
   onClear: () => void;
   isOpen: boolean;
   onToggle: () => void;
