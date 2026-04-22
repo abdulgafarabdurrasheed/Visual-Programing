@@ -394,7 +394,7 @@ const App: React.FC = () => {
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
               }}
             >
-              <WireLayer wires={wires} nodes={nodes} drawingWire={drawingWire} />
+              <WireLayer wires={wires} nodes={nodes} drawingWire={drawingWire} activeNodeId={activeNodeId} />
 
               {nodes.map(node => (
                 <NodeComponent

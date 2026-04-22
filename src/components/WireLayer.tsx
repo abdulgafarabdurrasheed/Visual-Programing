@@ -14,6 +14,7 @@ interface WireLayerProps {
     mouseX: number;
     mouseY: number;
   };
+  activeNodeId: string | null;
 }
 
 function getPortPosition(nodes: NodeData[], nodeId: string, portId: string): { x: number; y: number } | null {
@@ -56,7 +57,7 @@ function buildBezierPath(x1: number, y1: number, x2: number, y2: number): string
   return `M ${x1} ${y1} C ${x1 + controlOffset} ${y1}, ${x2 - controlOffset} ${y2}, ${x2} ${y2}`;
 }
 
-const WireLayer: React.FC<WireLayerProps> = ({ wires, nodes, drawingWire }) => {
+const WireLayer: React.FC<WireLayerProps> = ({ wires, nodes, drawingWire, activeNodeId }) => {
   const wireElements = useMemo(() => {
     return wires.map(wire => {
       const from = getPortPosition(nodes, wire.fromNodeId, wire.fromPortId);
@@ -64,15 +65,38 @@ const WireLayer: React.FC<WireLayerProps> = ({ wires, nodes, drawingWire }) => {
       if (!from || !to) return null;
       const color = PORT_COLORS[wire.type] || '#6366f1';
       const isExec = wire.type === 'exec';
+      const isLoop = (() => {
+        const fromNode = nodes.find(n => n.id === wire.fromNodeId);
+        if (!fromNode) return false;
+        const port = fromNode.outputs.find(p => p.id === wire.fromPortId);
+        return port?.label === 'Loop Body';
+      })();
+      
+      const isActive = activeNodeId === wire.fromNodeId || activeNodeId === wire.toNodeId;
       const path = buildBezierPath(from.x, from.y, to.x, to.y);
+      
       return (
         <g key={wire.id}>
-          <path d={path} fill="none" stroke={color} strokeWidth={isExec ? 4 : 3} strokeOpacity={0.1} filter="url(#glow)" />
-          <path d={path} fill="none" stroke={color} strokeWidth={isExec ? 3 : 2} strokeOpacity={0.7} strokeLinecap="round" />
+          <path d={path} fill="none" stroke={color} strokeWidth={isExec ? 4 : 3} strokeOpacity={isActive ? 0.4 : 0.1} filter="url(#glow)" />
+          <path 
+            d={path} fill="none" stroke={color} strokeWidth={isExec ? 3 : 2} 
+            strokeOpacity={isActive ? 1 : 0.7} strokeLinecap="round" 
+            style={isActive ? { filter: `drop-shadow(0 0 6px ${color})` } : undefined} 
+          />
+          {isLoop && (
+            <>
+              <circle r="3" fill={color} opacity={0.9}><animateMotion dur="1.5s" repeatCount="indefinite" path={path} /></circle>
+              <circle r="3" fill={color} opacity={0.6}><animateMotion dur="1.5s" repeatCount="indefinite" path={path} begin="0.5s" /></circle>
+              <circle r="3" fill={color} opacity={0.3}><animateMotion dur="1.5s" repeatCount="indefinite" path={path} begin="1s" /></circle>
+            </>
+          )}
+          {isExec && !isLoop && isActive && (
+            <circle r="2.5" fill={color}><animateMotion dur="0.8s" repeatCount="indefinite" path={path} /></circle>
+          )}
         </g>
       );
     });
-  }, [wires, nodes]);
+  }, [wires, nodes, activeNodeId]);
 
   const drawingWireElement = useMemo(() => {
     if (!drawingWire.isDrawing || !drawingWire.fromNodeId || !drawingWire.fromPortId) return null;
