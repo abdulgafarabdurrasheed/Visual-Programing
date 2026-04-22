@@ -16,7 +16,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
   node, isActive, isSelected, onMouseDown, onPortMouseDown, onPortMouseUp, onNodeDataChange
 }) => {
   const color = CATEGORY_COLORS[node.category] || '#6366f1';
-  const width = 200;
+  const width = node.width || 200;
 
   const renderPort = (port: Port) => {
     const isExec = port.type === 'exec';
@@ -136,7 +136,6 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
       }}
       onMouseDown={(e) => onMouseDown(e, node.id)}
     >
-      {/* Node Header */}
       <div
         style={{ 
           height: 36, padding: '0 12px', gap: 8,
@@ -155,7 +154,6 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
         </span>
       </div>
 
-      {/* Node body */}
       <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 10 }}>
         {node.data?.varName !== undefined && (
           <input
@@ -185,7 +183,6 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
             onMouseDown={(e) => e.stopPropagation()}
           />
         )}
-        {/* Node Ports */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2 }}>{node.inputs.map(renderPort)}</div>
           <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2 }}>{node.outputs.map(renderPort)}</div>

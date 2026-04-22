@@ -22,7 +22,7 @@ function getPortPosition(nodes: NodeData[], nodeId: string, portId: string): { x
   if (!node) return null;
   const inputIdx = node.inputs.findIndex(p => p.id === portId);
   const outputIdx = node.outputs.findIndex(p => p.id === portId);
-  const nodeWidth = 200;
+  const nodeWidth = node.width || 200;
   const headerHeight = 36;
   const bodyPadTop = 8;
   const bodyGap = 8;

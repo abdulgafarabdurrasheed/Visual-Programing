@@ -283,21 +283,19 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleNodeDataChange = useCallback((nodeId: string, data: Record<string, any>) => {
+  const handleNodeDataChange = useCallback((nodeId: string, key: string, value: any) => {
     setNodes(prev => prev.map(n => {
       if (n.id !== nodeId) return n;
 
-      const portKey = Object.keys(data).find(k => k.startsWith('__port__'));
-      if (portKey) {
-        const portId = portKey.replace('__port__', '');
-        const value = data[portKey];
+      if (key.startsWith('__port__')) {
+        const portId = key.replace('__port__', '');
         return {
           ...n,
           inputs: n.inputs.map(p => p.id === portId ? { ...p, value } : p),
         };
       }
 
-      return { ...n, data: { ...n.data, ...data } };
+      return { ...n, data: { ...n.data, [key]: value } };
     }));
   }, []);
 
@@ -410,7 +408,6 @@ const App: React.FC = () => {
               ))}
             </div>
 
-            {/* Keyboard shortcuts hint */}
             <div
               style={{
                 position: 'absolute', bottom: 16, right: 16,
