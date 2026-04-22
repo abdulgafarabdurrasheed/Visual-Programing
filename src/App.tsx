@@ -10,6 +10,7 @@ import ConsolePanel from './components/ConsolePanel';
 import Toolbar from './components/Toolbar';
 import ContextMenu from './components/ContextMenu';
 import Tutorial from './components/Tutorial';
+import { useHistory } from './useHistory';
 
 let _nodeIdCounter = 0;
 const newId = () => `node_${++_nodeIdCounter}_${Date.now()}`;
@@ -76,8 +77,29 @@ function createDemoGraph(): { nodes: NodeData[]; wires: Wire[] } {
 const App: React.FC = () => {
   const tutorialDone = (() => { try { return localStorage.getItem('nodescript_tutorial_done') === '1'; } catch { return false; } })();
   const initialDemo = tutorialDone ? createDemoGraph() : { nodes: [], wires: [] };
-  const [nodes, setNodes] = useState<NodeData[]>(initialDemo.nodes);
-  const [wires, setWires] = useState<Wire[]>(initialDemo.wires);
+
+  const { present: state, setPresent: setState, undo, redo } = useHistory({
+    nodes: initialDemo.nodes,
+    wires: initialDemo.wires
+  });
+
+  const nodes = state.nodes;
+  const wires = state.wires;
+
+  const setNodes = useCallback((updater: React.SetStateAction<NodeData[]>, replace = false) => {
+    setState(prev => ({
+      nodes: typeof updater === 'function' ? updater(prev.nodes) : updater,
+      wires: prev.wires
+    }), replace);
+  }, [setState]);
+
+  const setWires = useCallback((updater: React.SetStateAction<Wire[]>, replace = false) => {
+    setState(prev => ({
+      nodes: prev.nodes,
+      wires: typeof updater === 'function' ? updater(prev.wires) : updater
+    }), replace);
+  }, [setState]);
+
   const [showTutorial, setShowTutorial] = useState(!tutorialDone);
   const [viewport, setViewport] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -169,7 +191,6 @@ const App: React.FC = () => {
     }
 
     const destPortId = direction === 'input' ? portId : drawingWire.fromPortId!;
-    setWires(prev => prev.filter(w => w.toPortId !== destPortId));
 
     const fromNodeId = drawingWire.fromDirection === 'output' ? drawingWire.fromNodeId : nodeId;
     const fromPortId = drawingWire.fromDirection === 'output' ? drawingWire.fromPortId! : portId;
@@ -183,9 +204,12 @@ const App: React.FC = () => {
       type: wireType as PortType,
     };
 
-    setWires(prev => [...prev, newWire]);
+    setState(prev => ({
+      nodes: prev.nodes,
+      wires: [...prev.wires.filter(w => w.toPortId !== destPortId), newWire]
+    }));
     setDrawingWire({ isDrawing: false, fromNodeId: null, fromPortId: null, fromType: null, fromDirection: null, mouseX: 0, mouseY: 0 });
-  }, [drawingWire]);
+  }, [drawingWire, setState]);
 
   const handleBoardMouseDown = useCallback((e: React.MouseEvent) => {
     if (e.button === 1 || (e.button === 0 && e.target === boardRef.current)) {
@@ -213,13 +237,15 @@ const App: React.FC = () => {
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
 
       if (e.key === 'Delete' && selectedNodeId) {
-        setNodes(prev => prev.filter(n => n.id !== selectedNodeId));
-        setWires(prev => prev.filter(w => w.fromNodeId !== selectedNodeId && w.toNodeId !== selectedNodeId));
+        setState(prev => ({
+          nodes: prev.nodes.filter(n => n.id !== selectedNodeId),
+          wires: prev.wires.filter(w => w.fromNodeId !== selectedNodeId && w.toNodeId !== selectedNodeId)
+        }));
         setSelectedNodeId(null);
       } else if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedNodeId) {
         e.preventDefault();
-        setNodes(prev => {
-          const original = prev.find(n => n.id === selectedNodeId);
+        setState(prev => {
+          const original = prev.nodes.find(n => n.id === selectedNodeId);
           if (!original) return prev;
           
           const template = NODE_TEMPLATES.find(t => t.type === original.type);
@@ -238,8 +264,14 @@ const App: React.FC = () => {
           
           setTimeout(() => setSelectedNodeId(newNodeId), 0);
 
-          return [...prev, duplicate];
+          return { nodes: [...prev.nodes, duplicate], wires: prev.wires };
         });
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      } else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        redo();
       }
     };
 
@@ -255,7 +287,7 @@ const App: React.FC = () => {
           n.id === dragging.nodeId
             ? { ...n, x: boardPos.x - dragging.offsetX, y: boardPos.y - dragging.offsetY }
             : n
-        ));
+        ), true);
       }
       if (drawingWire.isDrawing) {
         const boardPos = screenToBoard(e.clientX, e.clientY);
@@ -369,10 +401,9 @@ const App: React.FC = () => {
 
   const handleClear = useCallback(() => {
     if (isRunning) return;
-    setNodes([]);
-    setWires([]);
+    setState({ nodes: [], wires: [] });
     setSelectedNodeId(null);
-  }, [isRunning]);
+  }, [isRunning, setState]);
 
   const handleFitView = useCallback(() => {
     setViewport({ x: 0, y: 0, zoom: 1 });
