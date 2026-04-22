@@ -23,38 +23,38 @@ function createDemoGraph(): { nodes: NodeData[]; wires: Wire[] } {
   const startNode = t('start').createNode(60, 160, newId());
   nodes.push(startNode);
 
-  const setSum0 = t('set_variable').createNode(320, 140, newId());
+  const setSum0 = t('set_variable').createNode(380, 140, newId());
   setSum0.data = { varName: 'sum' };
   setSum0.inputs[1].value = 0;
   nodes.push(setSum0);
 
-  const forLoop = t('for_loop').createNode(620, 120, newId());
+  const forLoop = t('for_loop').createNode(760, 120, newId());
   forLoop.inputs[1].value = 10;
   nodes.push(forLoop);
 
-  const getSum = t('get_variable').createNode(620, 380, newId());
+  const getSum = t('get_variable').createNode(760, 420, newId());
   getSum.data = { varName: 'sum' };
   nodes.push(getSum);
 
-  const addOne = t('add').createNode(620, 520, newId());
+  const addOne = t('add').createNode(760, 560, newId());
   addOne.inputs[1].value = 1;
   nodes.push(addOne);
 
-  const addToSum = t('add').createNode(920, 420, newId());
+  const addToSum = t('add').createNode(1120, 480, newId());
   nodes.push(addToSum);
 
-  const setSumNew = t('set_variable').createNode(1200, 340, newId());
+  const setSumNew = t('set_variable').createNode(1480, 340, newId());
   setSumNew.data = { varName: 'sum' };
   nodes.push(setSumNew);
 
-  const getSumFinal = t('get_variable').createNode(920, 120, newId());
+  const getSumFinal = t('get_variable').createNode(1120, 120, newId());
   getSumFinal.data = { varName: 'sum' };
   nodes.push(getSumFinal);
 
-  const toStr = t('to_string').createNode(1140, 140, newId());
+  const toStr = t('to_string').createNode(1480, 120, newId());
   nodes.push(toStr);
 
-  const printResult = t('print').createNode(1380, 100, newId());
+  const printResult = t('print').createNode(1800, 100, newId());
   printResult.inputs[1].value = '';
   nodes.push(printResult);
 

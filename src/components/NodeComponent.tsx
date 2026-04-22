@@ -125,10 +125,10 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
         background: 'linear-gradient(180deg, #16162a 0%, #0e0e1a 100%)',
         border: `1px solid ${isSelected ? color : '#2a2a4a'}`,
         boxShadow: isActive 
-          ? `0 0 30px ${color}40, 0 0 0 1px ${color}` 
+          ? `0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px ${color}` 
           : isSelected 
-            ? `0 0 0 1px ${color}` 
-            : '0 8px 32px rgba(0,0,0,0.5)',
+            ? `0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px ${color}` 
+            : '0 4px 16px rgba(0,0,0,0.4)',
         transition: 'box-shadow 0.2s, border-color 0.2s',
         overflow: 'visible',
         display: 'flex',
@@ -145,7 +145,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
           borderTopLeftRadius: 11, borderTopRightRadius: 11
         }}
       >
-        <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
+        <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color }} />
         <span style={{ 
           fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', color: '#fff',
           textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'

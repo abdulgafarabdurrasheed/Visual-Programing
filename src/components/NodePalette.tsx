@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import type { NodeTemplate } from '../nodeTemplates';
 import { NODE_TEMPLATES } from '../nodeTemplates';
 import type { NodeCategory } from '../types';
-import { CATEGORY_COLORS, CATEGORY_ICONS } from '../types';
+import { CATEGORY_COLORS } from '../types';
+import { CATEGORY_ICONS } from '../icons';
 import './NodePalette.css';
 
 const CATEGORIES: { key: NodeCategory; label: string }[] = [

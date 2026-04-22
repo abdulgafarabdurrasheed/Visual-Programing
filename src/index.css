@@ -56,8 +56,8 @@ html, body, #root {
 }
 
 @keyframes pulseGlow {
-  0%, 100% { filter: drop-shadow(0 0 3px currentColor); opacity: 0.8; }
-  50% { filter: drop-shadow(0 0 10px currentColor); opacity: 1; }
+  0%, 100% { opacity: 0.8; stroke-width: 2.5; filter: drop-shadow(0 0 2px currentColor); }
+  50% { opacity: 1; stroke-width: 3.5; filter: drop-shadow(0 0 4px currentColor); }
 }
 
 @keyframes nodeAppear {

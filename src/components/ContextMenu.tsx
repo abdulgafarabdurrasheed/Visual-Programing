@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import type { NodeTemplate } from '../nodeTemplates';
 import { NODE_TEMPLATES } from '../nodeTemplates';
-import { CATEGORY_COLORS, CATEGORY_ICONS } from '../types';
+import { CATEGORY_COLORS } from '../types';
+import { CATEGORY_ICONS } from '../icons';
 import './ContextMenu.css';
 
 interface ContextMenuProps {
