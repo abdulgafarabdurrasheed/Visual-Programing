@@ -2,14 +2,14 @@ import React from 'react';
 import type { NodeData, Port, PortType } from '../types';
 import { PORT_COLORS, CATEGORY_COLORS } from '../types';
 
-interface NodeComponentProps {
+export interface NodeComponentProps {
   node: NodeData;
   isActive: boolean;
-  isSelected: boolean;
+  isSelected?: boolean;
   onMouseDown: (e: React.MouseEvent, nodeId: string) => void;
-  onPortMouseDown: (e: React.MouseEvent, nodeId: string, portId: string, type: PortType, direction: 'input' | 'output') => void;
-  onPortMouseUp: (e: React.MouseEvent, nodeId: string, portId: string, type: PortType, direction: 'input' | 'output') => void;
-  onNodeDataChange: (nodeId: string, data: Record<string, any>) => void;
+  onPortMouseDown: (e: React.MouseEvent, nodeId: string, portId: string, portType: PortType, direction: 'input' | 'output') => void;
+  onPortMouseUp: (e: React.MouseEvent, nodeId: string, portId: string, portType: PortType, direction: 'input' | 'output') => void;
+  onNodeDataChange: (nodeId: string, key: string, value: any) => void;
 }
 
 const NodeComponent: React.FC<NodeComponentProps> = ({
@@ -76,7 +76,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
               value={port.value ?? ''}
               onChange={(e) => {
                 const val = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
-                onNodeDataChange(node.id, { [`__port__${port.id}`]: val });
+                onNodeDataChange(node.id, `__port__${port.id}`, val);
               }}
               onMouseDown={(e) => e.stopPropagation()}
             />
@@ -165,7 +165,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
             }}
             placeholder="Variable name"
             value={node.data.varName}
-            onChange={(e) => onNodeDataChange(node.id, { varName: e.target.value })}
+            onChange={(e) => onNodeDataChange(node.id, 'varName', e.target.value)}
             onMouseDown={(e) => e.stopPropagation()}
           />
         )}
@@ -179,7 +179,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
               boxSizing: 'border-box'
             }}
             value={node.data.value}
-            onChange={(e) => onNodeDataChange(node.id, { value: node.type === 'number_literal' ? Number(e.target.value) : e.target.value })}
+            onChange={(e) => onNodeDataChange(node.id, 'value', node.type === 'number_literal' ? Number(e.target.value) : e.target.value)}
             onMouseDown={(e) => e.stopPropagation()}
           />
         )}
