@@ -207,18 +207,45 @@ const App: React.FC = () => {
     setContextMenu(null)
   }, [contextMenu, screenToBoard])
 
-  useEffect(() => {
+    useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
       if (e.key === 'Delete' && selectedNodeId) {
         setNodes(prev => prev.filter(n => n.id !== selectedNodeId));
         setWires(prev => prev.filter(w => w.fromNodeId !== selectedNodeId && w.toNodeId !== selectedNodeId));
         setSelectedNodeId(null);
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedNodeId) {
+        e.preventDefault();
+        setNodes(prev => {
+          const original = prev.find(n => n.id === selectedNodeId);
+          if (!original) return prev;
+          
+          const template = NODE_TEMPLATES.find(t => t.type === original.type);
+          if (!template) return prev;
+
+          const newNodeId = newId();
+          const duplicate = template.createNode(original.x + 30, original.y + 30, newNodeId);
+          
+          duplicate.data = JSON.parse(JSON.stringify(original.data || {}));
+          duplicate.width = original.width;
+          
+          duplicate.inputs = duplicate.inputs.map((inp, i) => ({
+            ...inp, 
+            value: original.inputs[i]?.value !== undefined ? original.inputs[i].value : inp.value 
+          }));
+          
+          setTimeout(() => setSelectedNodeId(newNodeId), 0);
+
+          return [...prev, duplicate];
+        });
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedNodeId])
+  }, [selectedNodeId]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
