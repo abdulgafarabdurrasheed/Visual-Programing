@@ -264,6 +264,7 @@ export class Interpreter {
 
       case 'sequence': {
         for (const out of node.outputs) {
+          if (!this.running) break;
           if (out.type === 'exec') {
             const next = this.getNextExecNode(out.id);
             if (next) await this.executeNode(next.node);

@@ -351,6 +351,38 @@ const App: React.FC = () => {
     setViewport({ x: 0, y: 0, zoom: 1 });
   }, []);
 
+  const handleSaveGraph = useCallback(() => {
+    const data = JSON.stringify({ nodes, wires }, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a')
+
+    a.href = url;
+    a.download = `graph_${new Date().getTime()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [nodes, wires]);
+
+  const handleLoadGraph = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const payload = JSON.parse(ev.target?.result as string);
+        if (payload.nodes && payload.wires) {
+          setNodes(payload.nodes);
+          setWires(payload.wires);
+          setViewport({ x: 0, y: 0, zoom: 1 })
+        }
+      } catch (err) {
+        console.error('Invalid graph file');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  }, []);
+
   const gridSize = 20 * viewport.zoom;
   const gridOffsetX = viewport.x % gridSize;
   const gridOffsetY = viewport.y % gridSize;
@@ -362,6 +394,8 @@ const App: React.FC = () => {
         onStop={handleStop}
         onClear={handleClear}
         onFitView={handleFitView}
+        onSave={handleSaveGraph}
+        onLoad={handleLoadGraph}
         isRunning={isRunning}
         nodeCount={nodes.length}
         wireCount={wires.length}

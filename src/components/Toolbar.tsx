@@ -5,14 +5,15 @@ interface ToolbarProps {
   onStop: () => void;
   onClear: () => void;
   onFitView: () => void;
+  onSave?: () => void;
+  onLoad?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isRunning: boolean;
   nodeCount: number;
   wireCount: number;
   zoom: number;
 }
 
-const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, isRunning, nodeCount, wireCount, zoom }) => {
-  return (
+const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, onSave, onLoad, isRunning, nodeCount, wireCount, zoom }) => {  return (
     <div 
       style={{ 
         position: 'absolute',
@@ -100,6 +101,21 @@ const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, is
         >
           Fit View
         </button>
+
+        <button
+          onClick={onSave}
+          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#94a3b8', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05'; e.currentTarget.style.color = '#e2e8f0'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8' }}
+        >Save</button>
+
+        <button 
+          onClick={() => { const el = document.getElementById('graph-upload'); el && el.click(); }} 
+          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#94a3b8', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }} 
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e2e8f0'; }} 
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+        >Load</button>
+        {onLoad && <input id="graph-upload" type='file' accept='.json' style={{ display: 'none' }} onChange={onLoad} />}
       </div>
 
       <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
