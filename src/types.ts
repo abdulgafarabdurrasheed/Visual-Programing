@@ -67,7 +67,7 @@ export const PORT_COLORS: Record<PortType, string> = {
   string: '#10b981',
   boolean: '#f43f5e',
   array: '#10b981',
-  any: '#94a3b8',
+  any: '#334155',
 };
 
 export interface ViewportState {

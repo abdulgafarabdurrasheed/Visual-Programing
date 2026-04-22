@@ -40,7 +40,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
                <div 
                  style={{ 
                    width: 10, height: 10, borderRadius: '50%', 
-                   backgroundColor: PORT_COLORS[port.type] || '#94a3b8',
+                   backgroundColor: PORT_COLORS[port.type] || '#334155',
                    border: `1.5px solid ${PORT_COLORS[port.type]}40`,
                    transition: 'transform 0.2s'
                  }} 
@@ -57,7 +57,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
         }}>
           <span style={{ 
             fontSize: 10, fontWeight: 600, letterSpacing: '0.02em', 
-            color: '#94a3b8', whiteSpace: 'nowrap',
+            color: '#334155', whiteSpace: 'nowrap',
             overflow: 'hidden', textOverflow: 'ellipsis', width: '100%'
           }}>
             {port.label}
@@ -68,9 +68,9 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
               style={{
                 marginTop: 2, width: 64, padding: '2px 6px',
                 fontSize: 9, borderRadius: 4,
-                background: 'rgba(0,0,0,0.3)',
-                border: '1px solid #2a2a4a',
-                color: '#e2e8f0', outline: 'none',
+                background: 'rgba(0,0,0,0.05)',
+                border: '1px solid #cbd5e1',
+                color: '#0f172a', outline: 'none',
                 transition: 'border-color 0.2s'
               }}
               value={port.value ?? ''}
@@ -101,7 +101,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
                 <div 
                   style={{ 
                     width: 10, height: 10, borderRadius: '50%', 
-                    backgroundColor: PORT_COLORS[port.type] || '#94a3b8',
+                    backgroundColor: PORT_COLORS[port.type] || '#334155',
                     border: `1.5px solid ${PORT_COLORS[port.type]}40`,
                     transition: 'transform 0.2s'
                   }} 
@@ -122,13 +122,13 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
         borderRadius: 12,
         userSelect: 'none',
         zIndex: isActive ? 100 : isSelected ? 50 : 10,
-        background: 'linear-gradient(180deg, #16162a 0%, #0e0e1a 100%)',
-        border: `1px solid ${isSelected ? color : '#2a2a4a'}`,
+        background: 'linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)',
+        border: `1px solid ${isSelected ? color : '#cbd5e1'}`,
         boxShadow: isActive 
-          ? `0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px ${color}` 
+          ? `0 4px 16px rgba(0,0,0,0.15), 0 0 0 1px ${color}` 
           : isSelected 
-            ? `0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px ${color}` 
-            : '0 4px 16px rgba(0,0,0,0.4)',
+            ? `0 4px 16px rgba(0,0,0,0.1), 0 0 0 1px ${color}` 
+            : '0 4px 16px rgba(255,255,255,0.7)',
         transition: 'box-shadow 0.2s, border-color 0.2s',
         overflow: 'visible',
         display: 'flex',
@@ -147,7 +147,7 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
       >
         <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color }} />
         <span style={{ 
-          fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', color: '#fff',
+          fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', color: '#0f172a',
           textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'
         }}>
           {node.label}
@@ -159,8 +159,8 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
           <input
             style={{
               width: '100%', padding: '6px 10px', fontSize: 10, borderRadius: 6,
-              background: 'rgba(0,0,0,0.4)', border: '1px solid #2a2a4a',
-              color: '#e2e8f0', outline: 'none', transition: 'border-color 0.2s',
+              background: 'rgba(255,255,255,0.7)', border: '1px solid #cbd5e1',
+              color: '#0f172a', outline: 'none', transition: 'border-color 0.2s',
               boxSizing: 'border-box'
             }}
             placeholder="Variable name"
@@ -174,8 +174,8 @@ const NodeComponent: React.FC<NodeComponentProps> = ({
             type={node.type === 'number_literal' ? 'number' : 'text'}
             style={{
               width: '100%', padding: '6px 10px', fontSize: 10, borderRadius: 6,
-              background: 'rgba(0,0,0,0.4)', border: '1px solid #2a2a4a',
-              color: '#e2e8f0', outline: 'none', transition: 'border-color 0.2s',
+              background: 'rgba(255,255,255,0.7)', border: '1px solid #cbd5e1',
+              color: '#0f172a', outline: 'none', transition: 'border-color 0.2s',
               boxSizing: 'border-box'
             }}
             value={node.data.value}

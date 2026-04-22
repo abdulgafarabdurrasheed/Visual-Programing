@@ -4,8 +4,8 @@
   height: 100vh;
   width: 260px;
   user-select: none;
-  background: linear-gradient(180deg, #12121e 0%, #0e0e1a 100%);
-  border-right: 1px solid #1e1e3a;
+  background: linear-gradient(180deg, #f1f5f9 0%, #f1f5f9 100%);
+  border-right: 1px solid #cbd5e1;
   box-sizing: border-box;
 }
 
@@ -16,11 +16,11 @@
   display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
 }
-.np-title { font-size: 14px; font-weight: bold; letter-spacing: 0.05em; color: #e2e8f0; margin: 0; }
+.np-title { font-size: 14px; font-weight: bold; letter-spacing: 0.05em; color: #0f172a; margin: 0; }
 
 .np-search {
   width: 100%; font-size: 12px; padding: 8px 12px; border-radius: 8px; box-sizing: border-box;
-  background: #0a0a14; border: 1px solid #2a2a4a; color: #e2e8f0; transition: border-color 0.2s;
+  background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; transition: border-color 0.2s;
 }
 .np-search:focus { outline: none; border-color: #6366f1; }
 
@@ -40,5 +40,5 @@
 .np-item:active { cursor: grabbing; }
 .np-item-dot { width: 6px; height: 6px; border-radius: 50%; }
 .np-item-text { flex: 1; min-width: 0; }
-.np-item-label { font-size: 12px; font-weight: 500; color: #e2e8f0; }
-.np-item-desc { font-size: 10px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.np-item-label { font-size: 12px; font-weight: 500; color: #0f172a; }
+.np-item-desc { font-size: 10px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

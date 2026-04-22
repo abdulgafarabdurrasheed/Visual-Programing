@@ -26,11 +26,11 @@ const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, on
         padding: '10px 20px',
         borderRadius: 14,
         zIndex: 1000,
-        background: 'rgba(18, 18, 30, 0.7)',
+        background: 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
+        border: '1px solid rgba(0, 0, 0, 0.05)',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.15)'
       }}
     >
       <button
@@ -61,7 +61,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, on
         {isRunning ? '⏹ STOP' : '▶ RUN'}
       </button>
 
-      <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.08)', margin: '0 4px' }} />
 
       <div style={{ display: 'flex', gap: 4 }}>
         <button 
@@ -71,14 +71,14 @@ const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, on
             fontSize: 11, 
             fontWeight: 600,
             borderRadius: 8, 
-            color: '#94a3b8',
+            color: '#334155',
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
             transition: 'all 0.2s'
           }} 
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e2e8f0'; }} 
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#0f172a'; }} 
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; }}
         >
           Clear
         </button>
@@ -90,48 +90,48 @@ const Toolbar: React.FC<ToolbarProps> = ({ onRun, onStop, onClear, onFitView, on
             fontSize: 11, 
             fontWeight: 600,
             borderRadius: 8, 
-            color: '#94a3b8',
+            color: '#334155',
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
             transition: 'all 0.2s'
           }} 
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e2e8f0'; }} 
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#0f172a'; }} 
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; }}
         >
           Fit View
         </button>
 
         <button
           onClick={onSave}
-          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#94a3b8', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05'; e.currentTarget.style.color = '#e2e8f0'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8' }}
+          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05'; e.currentTarget.style.color = '#0f172a'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155' }}
         >Save</button>
 
         <button 
           onClick={() => { const el = document.getElementById('graph-upload'); el && el.click(); }} 
-          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#94a3b8', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }} 
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#e2e8f0'; }} 
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+          style={{ padding: '8px 14px', fontSize: 11, fontWeight: 600, borderRadius: 8, color: '#334155', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }} 
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(0,0,0,0.05)'; e.currentTarget.style.color = '#0f172a'; }} 
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#334155'; }}
         >Load</button>
         {onLoad && <input id="graph-upload" type='file' accept='.json' style={{ display: 'none' }} onChange={onLoad} />}
       </div>
 
-      <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
+      <div style={{ width: 1, height: 24, background: 'rgba(0,0,0,0.08)', margin: '0 4px' }} />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 10, fontWeight: 600, color: '#475569', paddingLeft: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 10, fontWeight: 600, color: '#334155', paddingLeft: 4 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ color: '#6366f1' }}>NODE</span>
-          <span style={{ color: '#94a3b8' }}>{nodeCount}</span>
+          <span style={{ color: '#334155' }}>{nodeCount}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ color: '#f59e0b' }}>WIRE</span>
-          <span style={{ color: '#94a3b8' }}>{wireCount}</span>
+          <span style={{ color: '#334155' }}>{wireCount}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ color: '#22d3ee' }}>VIEW</span>
-          <span style={{ color: '#94a3b8' }}>{Math.round(zoom * 100)}%</span>
+          <span style={{ color: '#334155' }}>{Math.round(zoom * 100)}%</span>
         </div>
       </div>
     </div>

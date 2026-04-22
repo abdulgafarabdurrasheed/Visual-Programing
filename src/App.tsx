@@ -411,7 +411,7 @@ const App: React.FC = () => {
             style={{
               flex: 1, position: 'relative', overflow: 'hidden',
               cursor: panning ? 'grabbing' : dragging ? 'default' : 'grab',
-              backgroundImage: `radial-gradient(circle at ${gridOffsetX}px ${gridOffsetY}px, #1a1a2e 1px, transparent 1px)`,
+              backgroundImage: `radial-gradient(circle at ${gridOffsetX}px ${gridOffsetY}px, #cbd5e1 1px, transparent 1px)`,
               backgroundSize: `${gridSize}px ${gridSize}px`,
             }}
             onMouseDown={handleBoardMouseDown}
@@ -447,12 +447,12 @@ const App: React.FC = () => {
                 position: 'absolute', bottom: 16, right: 16,
                 display: 'flex', alignItems: 'center', gap: 12,
                 padding: '6px 14px', borderRadius: 10,
-                fontSize: 10, color: '#475569', fontWeight: 500,
+                fontSize: 10, color: '#334155', fontWeight: 500,
                 pointerEvents: 'none',
-                background: 'rgba(18, 18, 30, 0.7)',
+                background: 'rgba(255, 255, 255, 0.8)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(0, 0, 0, 0.05)',
               }}
             >
               <span>Pan: Middle Click / Empty Space</span>

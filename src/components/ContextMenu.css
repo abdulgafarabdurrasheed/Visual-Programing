@@ -11,14 +11,14 @@
     z-index: 1000;
     border-radius: 12px;
     overflow: hidden;
-    background: linear-gradient(180deg, #16162a 0%, #12121e) 100%;
-    border: 1px solid #2a2a4a;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 1px rgba(99, 102, 241, 0.2);
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9) 100%;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 0 1px rgba(99, 102, 241, 0.2);
 }
 
 .ctx-search-wrap {
     padding: 8px;
-    border-bottom: 1px solid #1e1e3a;
+    border-bottom: 1px solid #cbd5e1;
 }
 
 .ctx-search {
@@ -26,9 +26,9 @@
   font-size: 12px;
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid #2a2a4a;
-  background: #0a0a14;
-  color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
   outline: none;
   box-sizing: border-box;
 }
@@ -51,6 +51,6 @@
     transition: background 0.15s;
 }
 
-.ctx-item-label { font-size: 12px; font-weight: 500; color: #e2e8f0; }
-.ctx-item-desc { font-size: 10px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctx-item-label { font-size: 12px; font-weight: 500; color: #0f172a; }
+.ctx-item-desc { font-size: 10px; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ctx-item-bar { width: 4px; height: 20px; border-radius: 9999px; }

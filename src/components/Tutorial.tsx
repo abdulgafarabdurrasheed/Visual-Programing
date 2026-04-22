@@ -265,7 +265,7 @@ const Tutorial: React.FC<TutorialProps> = ({ nodes, onComplete, onLoadDemo, onSk
               key={i}
               className="tutorial-dot"
               style={{
-                background: i < step ? '#10b981' : i === step ? '#6366f1' : '#2a2a4a',
+                background: i < step ? '#10b981' : i === step ? '#6366f1' : '#cbd5e1',
                 width: i === step ? 20 : 6,
                 borderRadius: i === step ? 3 : 50,
               }}

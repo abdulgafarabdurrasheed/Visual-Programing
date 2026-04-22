@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   animation: tutFadeIn 0.3s ease-out;
@@ -15,8 +15,8 @@
   width: 440px;
   max-width: 90vw;
   border-radius: 16px;
-  background: linear-gradient(180deg, #16162a 0%, #0e0e1a 100%);
-  border: 1px solid #2a2a4a;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 1px rgba(99, 102, 241, 0.3);
   overflow: hidden;
   animation: tutSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -51,7 +51,7 @@
 .tutorial-title {
   font-size: 18px;
   font-weight: 700;
-  color: #f8fafc;
+  color: #0f172a;
   margin-top: 2px;
 }
 
@@ -62,11 +62,11 @@
 .tutorial-text {
   font-size: 13px;
   line-height: 1.7;
-  color: #94a3b8;
+  color: #334155;
 }
 
 .tutorial-text strong {
-  color: #e2e8f0;
+  color: #0f172a;
   font-weight: 600;
 }
 
@@ -148,14 +148,14 @@
 
 .tutorial-btn-skip {
   background: transparent;
-  color: #475569;
+  color: #334155;
   border: none;
   font-size: 11px;
   font-weight: 500;
 }
 
 .tutorial-btn-skip:hover {
-  color: #94a3b8;
+  color: #334155;
 }
 
 .tutorial-progress {

@@ -9,9 +9,9 @@
     padding: 8px 16px;
     border-radius: 12px;
     z-index: 50;
-    background: #12121e;
-    border: 1px solid #1e1e3a;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    background: #f1f5f9;
+    border: 1px solid #0f172a;
+    box-shadow: 0 4px 12px rgba(255,255,255,0.7);
 }
 
 .tb-run-btn {
@@ -39,16 +39,16 @@
     border-radius: 4px;
     border: none;
     cursor: pointer;
-    color: #94a3b8;
+    color: #334155;
     background: transparent;
     transition: color 0.2s;
 }
-.tb-action-btn:hover { color: #e2e8f0; }
+.tb-action-btn:hover { color: #0f172a; }
 
 .tb-stats {
     display: flex;
     align-items: center;
     gap: 12px;
     font-size: 10px;
-    color: #64748b;
+    color: #334155;
 }

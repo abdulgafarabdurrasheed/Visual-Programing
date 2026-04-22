@@ -108,7 +108,7 @@ const WireLayer: React.FC<WireLayerProps> = ({ wires, nodes, drawingWire, active
     const x2 = isOutput ? drawingWire.mouseX : from.x;
     const y2 = isOutput ? drawingWire.mouseY : from.y;
     const path = buildBezierPath(x1, y1, x2, y2);
-    const color = PORT_COLORS[(drawingWire.fromType as keyof typeof PORT_COLORS) || 'any'] || '#94a3b8';
+    const color = PORT_COLORS[(drawingWire.fromType as keyof typeof PORT_COLORS) || 'any'] || '#334155';
     return <path d={path} fill="none" stroke={color} strokeWidth={2} strokeOpacity={0.5} strokeDasharray="6 4" />;
   }, [drawingWire, nodes]);
 

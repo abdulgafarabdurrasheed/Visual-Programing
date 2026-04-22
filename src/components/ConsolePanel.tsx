@@ -10,7 +10,7 @@ interface ConsolePanelProps {
 }
 
 const TYPE_STYLES: Record<ConsoleEntry['type'], { color: string; icon: string; bg: string }> = {
-  log: { color: '#e2e8f0', icon: '›', bg: 'transparent' },
+  log: { color: '#0f172a', icon: '›', bg: 'transparent' },
   error: { color: '#f43f5e', icon: '✕', bg: '#f43f5e08' },
   warn: { color: '#f59e0b', icon: '⚠', bg: '#f59e0b08' },
   info: { color: '#22d3ee', icon: 'ℹ', bg: '#22d3ee08' },
@@ -29,11 +29,11 @@ const ConsolePanel: React.FC<ConsolePanelProps> = ({ entries, onClear, isOpen, o
     <div className="console-container" style={{ height: isOpen ? 220 : 36 }}>
       <div
         className="console-header"
-        style={{ borderBottom: isOpen ? '1px solid #1a1a2e' : 'none' }}
+        style={{ borderBottom: isOpen ? '1px solid #cbd5e1' : 'none' }}
         onClick={onToggle}
       >
         <div className="console-header-left">
-          <span style={{ fontSize: '10px', color: '#475569', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s', display: 'inline-block' }}>▶</span>
+          <span style={{ fontSize: '10px', color: '#334155', transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s', display: 'inline-block' }}>▶</span>
           <span className="console-label">CONSOLE</span>
           {entries.length > 0 && (
             <span className="console-badge">{entries.length}</span>
