@@ -94,6 +94,30 @@ export class Interpreter {
         if (!Array.isArray(arr)) return 0;
         return arr.length
       }
+      case 'random_number': {
+        const min = Number(this.resolveInputValue(node, node.inputs[0].id) ?? 0);
+        const max = Number(this.resolveInputValue(node, node.inputs[1].id) ?? 100);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+      case 'concat_strings': {
+        const a = String(this.resolveInputValue(node, node.inputs[0].id) ?? '');
+        const b = String(this.resolveInputValue(node, node.inputs[1].id) ?? '');
+        return a + b;
+      }
+      case 'not': {
+        const val = this.resolveInputValue(node, node.inputs[0].id);
+        return !val;
+      }
+      case 'and': {
+        const a = this.resolveInputValue(node, node.inputs[0].id);
+        const b = this.resolveInputValue(node, node.inputs[1].id);
+        return Boolean(a) && Boolean(b);
+      }
+      case 'or': {
+        const a = this.resolveInputValue(node, node.inputs[0].id);
+        const b = this.resolveInputValue(node, node.inputs[1].id);
+        return Boolean(a) || Boolean(b);
+      }
       default: {
         const outPort = node.outputs.find(p => p.id === outputPortId);
         return outPort?.value;
@@ -185,46 +209,59 @@ export class Interpreter {
         const indexPort = node.outputs.find(p => p.label === 'Index');
         const donePort = node.outputs.find(p => p.label === 'Completed');
 
-        this.log('info', `For Loop: iterating ${count} times`)
-        for (let i = 0; i < count; i++) {
+        this.log('info', `For Loop: iterating ${count} times`);
+
+        for (let i = 0; i < count && this.running; i++) {
           if (indexPort) indexPort.value = i;
+          
+          this.onNodeActive(node.id);
+          await this.delay(this.stepDelay / 2);
+          
           if (bodyPort) {
             const next = this.getNextExecNode(bodyPort.id);
-            if (next) await this.executeNode(next.node)
+            if (next) await this.executeNode(next.node);
           }
         }
-        if (donePort) {
+
+        if (donePort && this.running) {
           const next = this.getNextExecNode(donePort.id);
           if (next) await this.executeNode(next.node);
         }
         break;
       }
+      
       case 'while_loop': {
         const condPort = node.inputs.find(p => p.label === 'Condition');
         const bodyPort = node.outputs.find(p => p.label === 'Loop Body');
-        const donePort = node.outputs.find(p => p.label === 'Completed' );
+        const donePort = node.outputs.find(p => p.label === 'Completed');
 
         let iterations = 0;
         const maxIterations = 1000;
 
-        while (iterations < maxIterations) {
+        while (this.running && iterations < maxIterations) {
           const cond = condPort ? this.resolveInputValue(node, condPort.id) : false;
-          if (!cond) break
-          iterations++
+          if (!cond) break;
+          
+          iterations++;
+          
+          this.onNodeActive(node.id);
+          await this.delay(this.stepDelay / 2);
+          
           if (bodyPort) {
             const next = this.getNextExecNode(bodyPort.id);
-            if (next) await this.executeNode(next.node)
+            if (next) await this.executeNode(next.node);
           }
         }
 
-      this.log('info', `While Loop: completed after ${iterations} iterations`)
+        this.log('info', `While Loop: completed after ${iterations} iterations`);
 
-        if (donePort) {
+        if (donePort && this.running) {
           const next = this.getNextExecNode(donePort.id);
           if (next) await this.executeNode(next.node);
         }
         break;
       }
+
       case 'sequence': {
         for (const out of node.outputs) {
           if (out.type === 'exec') {

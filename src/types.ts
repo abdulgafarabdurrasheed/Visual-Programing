@@ -20,6 +20,8 @@ export interface NodeData {
     inputs: Port[];
     outputs: Port[];
     data?: Record<string, any>
+    width?: number;
+    height?: number;
 }
 
 export interface Wire {
@@ -29,6 +31,23 @@ export interface Wire {
     toNodeId: string;
     toPortId: string;
     type: PortType;
+}
+
+export interface DragState {
+  isDragging: boolean;
+  nodeId: string | null;
+  offsetX: number;
+  offsetY: number;
+}
+
+export interface WireDrawState {
+  isDrawing: boolean;
+  fromNodeId: string | null;
+  fromPortId: string | null;
+  fromType: PortType | null;
+  fromDirection: 'input' | 'output';
+  mouseX: number;
+  mouseY: number;
 }
 
 export const CATEGORY_COLORS: Record<NodeCategory, string> = {

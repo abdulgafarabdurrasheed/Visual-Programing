@@ -311,4 +311,83 @@ export const NODE_TEMPLATES: NodeTemplate[] = [
       ],
     }),
   },
+  {
+    type: 'random_number',
+    label: 'Random Number',
+    category: 'math',
+    description: 'Generate a random number between Min and Max',
+    createNode: (x, y, id) => ({
+      id, type: 'random_number', label: 'Random Number', category: 'math', x, y,
+      inputs: [
+        { id: uid(), label: 'Min', type: 'number', direction: 'input', value: 0 },
+        { id: uid(), label: 'Max', type: 'number', direction: 'input', value: 100 },
+      ],
+      outputs: [
+        { id: uid(), label: 'Value', type: 'number', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'concat_strings',
+    label: 'Concat Strings',
+    category: 'io',
+    description: 'Join two strings together',
+    createNode: (x, y, id) => ({
+      id, type: 'concat_strings', label: 'Concat Strings', category: 'io', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'string', direction: 'input', value: '' },
+        { id: uid(), label: 'B', type: 'string', direction: 'input', value: '' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'string', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'not',
+    label: 'NOT',
+    category: 'logic',
+    description: 'Invert a boolean value',
+    createNode: (x, y, id) => ({
+      id, type: 'not', label: 'NOT', category: 'logic', x, y,
+      inputs: [
+        { id: uid(), label: 'Input', type: 'boolean', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'boolean', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'and',
+    label: 'AND',
+    category: 'logic',
+    description: 'True only if both inputs are true',
+    createNode: (x, y, id) => ({
+      id, type: 'and', label: 'AND', category: 'logic', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'boolean', direction: 'input' },
+        { id: uid(), label: 'B', type: 'boolean', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'boolean', direction: 'output' },
+      ],
+    }),
+  },
+  {
+    type: 'or',
+    label: 'OR',
+    category: 'logic',
+    description: 'True if one input is true',
+    createNode: (x, y, id) => ({
+      id, type: 'or', label: 'OR', category: 'logic', x, y,
+      inputs: [
+        { id: uid(), label: 'A', type: 'boolean', direction: 'input' },
+        { id: uid(), label: 'B', type: 'boolean', direction: 'input' },
+      ],
+      outputs: [
+        { id: uid(), label: 'Result', type: 'boolean', direction: 'output' },
+      ],
+    }),
+  },
 ];
