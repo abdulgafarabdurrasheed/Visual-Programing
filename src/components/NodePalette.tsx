@@ -15,7 +15,11 @@ const CATEGORIES: { key: NodeCategory; label: string }[] = [
   { key: 'array', label: 'Arrays' },
 ];
 
-const NodePalette: React.FC = () => {
+interface NodePaletteProps {
+  onAddNode: (template: NodeTemplate, x?: number, y?: number) => void;
+}
+
+export function NodePalette({ onAddNode }: NodePaletteProps) {
   const [search, setSearch] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<NodeCategory | null>('event');
 
@@ -49,7 +53,7 @@ const NodePalette: React.FC = () => {
         </div>
         <input 
           type="text" 
-          placeholder="Search nodes..." 
+          placeholder="Search nodes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)} 
           className="np-search" 
@@ -79,7 +83,8 @@ const NodePalette: React.FC = () => {
                       key={t.type} 
                       draggable 
                       onDragStart={(e) => handleDragStart(e, t)} 
-                      className="np-item" 
+                      className="np-item"
+                      onClick={() => onAddNode && onAddNode(t, 400 + Math.random() * 200, 200 + Math.random() * 200)}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = `${color}1A`; }} 
                       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                     >

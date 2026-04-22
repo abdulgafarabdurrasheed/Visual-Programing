@@ -301,6 +301,13 @@ const App: React.FC = () => {
     }));
   }, []);
 
+  const handleAddNode = useCallback((template: NodeTemplate, x?: number, y?: number) => {
+    const boardPos = screenToBoard(x ?? 500, y ?? 300);
+    const id = `node_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const node = template.createNode(boardPos.x, boardPos.y, id);
+    setNodes(prev => [...prev, node]);
+  }, [screenToBoard]);
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     const templateType = e.dataTransfer.getData('application/nodescript-template');
@@ -364,7 +371,7 @@ const App: React.FC = () => {
       />
 
       <div style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative' }}>
-        <NodePalette />
+        <NodePalette onAddNode={handleAddNode} />
 
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, position: 'relative' }}>
           <div
